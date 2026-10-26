@@ -1,0 +1,1611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sourcing Decision Desk · Tech Mahindra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Georama:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --red:#E31837; --red-deep:#5F0229; --red-soft:#F8B4A3; --red-tint:#FDEEEF;
+  --steel:#4D4D4F; --ink:#29251D; --ink-2:#4A453D; --cream:#F6F2EA; --cream-2:#E5DFD3;
+  --navy:#0A0838; --navy-tint:#E9E8F2; --white:#FFFFFF; --muted:#7A746A; --line:#E9E4DA;
+  --radius:10px;
+  --shadow:0 1px 2px rgba(41,37,29,.06),0 4px 16px rgba(41,37,29,.06);
+  --font:"Georama","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--ink);background:var(--cream)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-rows:64px minmax(0,1fr);height:100vh}
+header.top{display:flex;align-items:center;gap:18px;padding:0 24px;background:var(--white);border-bottom:1px solid var(--line);position:relative;z-index:5}
+.logo{height:30px;display:block}
+.vsep{width:1px;height:30px;background:var(--line)}
+.product{display:flex;align-items:center;gap:10px}
+.pmark{width:32px;height:32px;flex:none}
+.pname{font-weight:700;font-size:17px;line-height:1.1}
+.ptag{font-size:12px;color:var(--muted)}
+.spacer{flex:1}
+.season{font-size:12.5px;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--cream)}
+.badge-sample{font-size:12px;font-weight:600;color:var(--red-deep);background:var(--red-tint);border:1px solid var(--red-soft);border-radius:999px;padding:5px 12px}
+
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--cream-2);background:var(--white);border-radius:8px;padding:8px 14px;font-weight:500;font-size:13.5px;white-space:nowrap}
+.btn:hover{border-color:var(--steel)}
+.btn.red{background:var(--red);border-color:var(--red);color:var(--white);font-weight:600}
+.btn.red:hover{background:#c8132f}
+.btn.navy{background:var(--navy);border-color:var(--navy);color:var(--white);font-weight:600}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--cream)}
+.btn.lg{padding:11px 20px;font-size:15px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--navy);color:var(--white);font-size:11.5px;font-weight:600}
+
+.body{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:0}
+nav.rail{background:var(--white);border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:4px;overflow:auto}
+.rail-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px 8px}
+.navstep{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;text-align:left;border:0;background:transparent;border-radius:10px;padding:10px}
+.navstep:hover{background:var(--cream)}
+.navstep .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--cream-2);font-weight:700;font-size:13px;color:var(--steel);background:var(--white)}
+.navstep .t{font-weight:600;font-size:14px;line-height:1.2}
+.navstep .s{font-size:12px;color:var(--muted)}
+.navstep.active{background:var(--red-tint)}
+.navstep.active .n{background:var(--red);border-color:var(--red);color:var(--white)}
+.navstep.done .n{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.crew{margin-top:auto;border-top:1px dashed var(--cream-2);padding:16px 10px 4px;display:grid;gap:8px}
+.crew-row{display:grid;grid-template-columns:9px minmax(0,1fr) auto;align-items:center;gap:9px;font-size:12.5px;white-space:nowrap}
+.crew-row .nm{overflow:hidden;text-overflow:ellipsis}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--cream-2);flex:none}
+.dot.running{background:var(--red);animation:pulse 1s ease-in-out infinite}
+.dot.done{background:var(--navy)}
+@keyframes pulse{50%{opacity:.35}}
+.crew-row .st{font-size:11px;color:var(--muted)}
+
+:root{--pad:32px}
+main{overflow:auto;padding:28px var(--pad) 56px;min-width:0}
+.screen{max-width:1280px;margin:0 auto;display:grid;gap:20px}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+h1{font-size:28px;line-height:1.15;margin:4px 0 6px;font-weight:700;letter-spacing:-.01em}
+.lead{color:var(--ink-2);max-width:760px;margin:0}
+h2{font-size:16px;margin:0;font-weight:700}
+h3{font-size:14px;margin:0;font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+.foot-note{font-size:12px;color:var(--muted);text-align:center;padding-top:8px}
+
+/* tags & chips */
+.tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid;border-radius:4px;padding:0 5px;line-height:16px;vertical-align:1px}
+.tag.sample{color:var(--red-deep);border-color:var(--red-soft);background:var(--red-tint)}
+.tag.public{color:var(--navy);border-color:#C9C7DD;background:var(--navy-tint)}
+.tag.expert{color:var(--steel);border-color:var(--cream-2);background:var(--cream)}
+.tag.calc{color:var(--white);border-color:var(--steel);background:var(--steel)}
+.chip{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.chip.neg{background:var(--red);color:var(--white)}
+.chip.rev{background:var(--red-tint);color:var(--red-deep)}
+.chip.fair{background:var(--navy-tint);color:var(--navy)}
+.chip.low{background:var(--white);color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.flag{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-2)}
+.flag::before{content:"";width:6px;height:6px;margin-top:7px;border-radius:50%;background:var(--red);flex:none}
+.flag.info::before{background:var(--steel)}
+.keyrows{display:grid;gap:8px}
+.keyrows .kr{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;align-items:center}
+.keyrows .kr .chip{justify-self:start}
+
+/* KPI tiles */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;display:grid;gap:4px;box-shadow:var(--shadow)}
+.kpi .k{font-size:12.5px;color:var(--muted)}
+.kpi .v{font-size:26px;font-weight:700;line-height:1.1}
+.kpi.hl{background:var(--red-tint);border-color:var(--red-soft)}
+.kpi.hl .v{color:var(--red)}
+.kpi .d{font-size:12px;color:var(--ink-2)}
+
+/* run banner */
+.runbar{display:flex;align-items:center;gap:14px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;flex-wrap:wrap}
+.runbar .prog{flex:1;min-width:160px;height:8px;background:var(--cream);border-radius:999px;overflow:hidden}
+.runbar .prog i{display:block;height:100%;background:var(--red);border-radius:999px;transition:width .1s linear}
+
+/* bars */
+.hbars{display:grid;gap:10px}
+.hbar{display:grid;grid-template-columns:104px minmax(0,1fr) 56px;gap:12px;align-items:center;font-size:13px}
+.hbar .track{height:14px;background:var(--cream);border-radius:4px;overflow:hidden}
+.hbar .fill{height:100%;background:var(--red);border-radius:4px}
+.hbar .val{text-align:right;font-weight:600}
+
+/* tables */
+.tbl-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;white-space:nowrap}
+th{font-size:11.5px;font-weight:600;color:var(--muted);background:#FBF9F5;position:sticky;top:0;z-index:1}
+th.sort{cursor:pointer;user-select:none}
+th.sort:hover{color:var(--ink)}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:#FCFAF6}
+.tbl-scroll{max-height:520px;overflow:auto}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fchip{border:1px solid var(--cream-2);background:var(--white);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:500}
+.fchip.on{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);margin-left:auto}
+.toggle input{accent-color:var(--red);width:16px;height:16px}
+
+/* desk */
+.stylehead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:start}
+.code{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.specs div{padding:12px 14px;border-right:1px solid var(--line);display:grid;gap:2px}
+.specs div:last-child{border-right:0}
+.specs .k{font-size:11.5px;color:var(--muted)}
+.specs .v{font-weight:600}
+.bom{display:grid;gap:0}
+.bom-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);align-items:center}
+.bom-row:last-child{border-bottom:0}
+.quote{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;background:var(--white)}
+.quote .qh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.quote .qh .small{line-height:1.4}
+.quote .fob{font-size:28px;font-weight:700;line-height:1}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;text-align:right;font-weight:500}
+.ask{background:var(--navy);color:var(--white);border-radius:var(--radius);padding:22px;display:grid;gap:14px}
+.ask label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;font-weight:600}
+.qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qopt{text-align:left;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:var(--white);border-radius:8px;padding:12px 14px;font-size:14.5px;font-weight:500}
+.qopt:hover{background:rgba(255,255,255,.12)}
+.qopt.on{background:var(--white);color:var(--ink);border-color:var(--white);box-shadow:inset 4px 0 0 var(--red)}
+.answer{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;display:grid;gap:10px}
+.answer .q{font-size:13px;color:var(--muted)}
+.answer .a{font-size:17px;line-height:1.5}
+.answer .row{display:flex;gap:10px;flex-wrap:wrap}
+.ask .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ask .hint{font-size:12.5px;opacity:.8}
+
+/* agent run */
+.runband{background:var(--navy);color:var(--white);border-radius:var(--radius);padding:16px 20px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:center}
+.runband .k{display:block;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.runband .q{font-size:16px;font-weight:500}
+.meter{display:grid;gap:6px;font-size:12.5px}
+.meter .top{display:flex;justify-content:space-between}
+.meter .bar{height:6px;background:rgba(255,255,255,.16);border-radius:999px;overflow:hidden}
+.meter .bar i{display:block;height:100%;background:var(--red);border-radius:999px;transition:width .3s}
+.pipeline{display:grid}
+.phase{display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px;position:relative;padding-bottom:22px}
+.phase:last-child{padding-bottom:0}
+.phase::before{content:"";position:absolute;left:15px;top:36px;bottom:4px;width:2px;background:var(--cream-2)}
+.phase:last-child::before{display:none}
+.phase.done::before{background:var(--navy)}
+.pn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--white);border:1.5px solid var(--cream-2);color:var(--steel)}
+.phase.running .pn{background:var(--red);border-color:var(--red);color:var(--white)}
+.phase.done .pn{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.phase-body{display:grid;gap:10px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;min-height:32px}
+.ph b{font-size:15px}
+.ph span{font-size:12.5px;color:var(--muted)}
+.phase-body .grid2,.phase-body .grid3{gap:14px}
+.astep{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+.astep.running{border-color:var(--red);box-shadow:0 0 0 3px var(--red-tint)}
+.astep.done{border-color:var(--cream-2)}
+.astep .ah{display:grid;grid-template-columns:28px minmax(0,1fr) auto;column-gap:10px;row-gap:1px;align-items:center}
+.astep .ah h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.astep .ah .doing{grid-column:2 / 4;font-size:12.5px;color:var(--muted)}
+.ares{display:grid;gap:10px;padding-top:10px;border-top:1px solid var(--line)}
+.mt{display:grid;font-size:12.5px}
+.mt .r{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);align-items:center}
+.mt .r:last-child{border-bottom:0}
+.mt .r.h{font-size:11px;font-weight:600;color:var(--muted);padding-top:0}
+.mt .r > span{white-space:nowrap}
+.mt .r > span:not(:first-child){text-align:right}
+.task-chips{display:flex;flex-wrap:wrap;gap:6px}
+.task-chips span{font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--cream);color:var(--ink-2)}
+.merge-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.rank{display:grid;gap:8px}
+.rank .r{display:grid;grid-template-columns:160px minmax(0,1fr) 32px;gap:10px;align-items:center;font-size:12.5px}
+.rank .track{height:8px;background:var(--cream);border-radius:999px;overflow:hidden}
+.rank .fill{display:block;height:100%;background:var(--steel);border-radius:999px}
+.rank .r.win{font-weight:700}
+.rank .r.win .fill{background:var(--red)}
+.notes{display:grid;gap:6px}
+.stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stats3 div{background:var(--cream);border-radius:8px;padding:8px 10px;display:grid}
+.stats3 .k{font-size:11px;color:var(--muted)}
+.stats3 .v{font-size:18px;font-weight:700}
+.checks{display:grid;gap:7px;font-size:12.5px}
+.checks div{display:flex;gap:8px;align-items:center}
+.checks div::before{content:"✓";width:18px;height:18px;border-radius:50%;background:var(--navy-tint);color:var(--navy);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.agent-ico{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--white);background:var(--steel);flex:none}
+.agent-ico.fm{background:var(--navy)}
+.agent-ico.sc{background:var(--red)}
+.agent-ico.tr{background:var(--red-deep)}
+.agent-ico.se{background:var(--steel)}
+.agent-ico.nb{background:#8A1538}
+.pill{font-size:11px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--cream);color:var(--muted)}
+.pill.running{background:var(--red);color:var(--white)}
+.pill.done{background:var(--navy);color:var(--white)}
+.tool{font-family:var(--mono);font-size:11.5px;color:var(--steel);background:var(--cream);border-radius:6px;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abar{height:4px;background:var(--cream);border-radius:999px;overflow:hidden}
+.abar i{display:block;height:100%;width:0;background:var(--red)}
+.astep.running .abar i{animation:fill var(--dur,2s) linear forwards}
+.astep.done .abar i{width:100%;background:var(--navy)}
+@keyframes fill{to{width:100%}}
+
+/* recommendation */
+.reco{background:var(--navy);color:var(--white);border-radius:var(--radius);padding:24px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px}
+.reco .eyebrow{color:var(--red-soft)}
+.reco h2{font-size:24px;line-height:1.2;margin:6px 0 10px}
+.reco ul{margin:0;padding-left:18px;display:grid;gap:6px;color:#DCDBEA}
+.reco .nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
+.reco .nums div{background:rgba(255,255,255,.07);border-radius:8px;padding:12px 14px;display:grid;gap:2px}
+.reco .nums .k{font-size:12px;color:#A9A7C9}
+.reco .nums .v{font-size:22px;font-weight:700}
+.reco .note{grid-column:1/-1;background:rgba(227,24,55,.18);border:1px solid rgba(248,180,163,.4);border-radius:8px;padding:10px 14px;font-size:13px}
+.cmp th.win,.cmp td.win{background:var(--red-tint)}
+.cmp td.win{font-weight:600}
+.cmp th.win{color:var(--red-deep)}
+.cmp td:first-child{color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--cream-2);background:var(--white);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:500}
+.tab.on{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.stack{display:flex;height:28px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.stack span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.lines{display:grid}
+.line{display:grid;grid-template-columns:minmax(0,1fr) auto 80px;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);align-items:center;font-size:13px}
+.line:last-child{border-bottom:0}
+.line .f{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.line.total{font-weight:700;border-top:1px solid var(--ink);border-bottom:0}
+.sliders{display:grid;gap:12px}
+.sl{display:grid;grid-template-columns:120px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px}
+.sl input[type=range]{width:100%;accent-color:var(--red)}
+.sl output{text-align:right;font-weight:600}
+.scores{display:grid;gap:10px}
+.score{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px}
+.score .track{height:10px;background:var(--cream);border-radius:999px;overflow:hidden}
+.score .fill{height:100%;background:var(--steel);border-radius:999px}
+.score.win .fill{background:var(--red)}
+.brief{display:grid;gap:12px}
+.brief .tw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.brief .tw div{background:var(--cream);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.brief .tw .k{font-size:11.5px;color:var(--muted)}
+.brief .tw .v{font-size:19px;font-weight:700}
+.brief ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.pushback{background:var(--red-tint);border-radius:8px;padding:10px 12px;font-size:13px}
+.decide{position:sticky;bottom:-56px;margin:0 calc(-1 * var(--pad)) -56px;padding:16px var(--pad);background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap;backdrop-filter:blur(4px);z-index:3}
+.decide .msg{flex:1;min-width:220px;font-size:13.5px}
+.decide select,.decide input{border:1px solid var(--cream-2);border-radius:8px;padding:8px 10px;background:var(--white)}
+.decided{display:flex;align-items:center;gap:12px;background:var(--navy-tint);border:1px solid #C9C7DD;border-radius:var(--radius);padding:14px 16px}
+.decided.rej{background:var(--red-tint);border-color:var(--red-soft)}
+.decided b{font-weight:700}
+
+/* what-if */
+.controls{display:grid;gap:16px}
+.ctl{display:grid;gap:6px}
+.ctl .top{display:flex;justify-content:space-between;font-size:13px}
+.ctl .top b{font-weight:600}
+.ctl input[type=range]{width:100%;accent-color:var(--red)}
+.ctl .sub{font-size:11.5px;color:var(--muted)}
+.presets{display:grid;gap:8px}
+.preset{text-align:left;border:1px solid var(--cream-2);background:var(--white);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.preset:hover{border-color:var(--red)}
+.preset b{font-size:13px}
+.preset span{font-size:12px;color:var(--muted)}
+.chg{font-weight:700}
+.chg.up{color:var(--red)}
+.chg.down{color:#1E6B45}
+.verdict{border-radius:var(--radius);padding:16px 18px;display:grid;gap:4px}
+.verdict.same{background:var(--navy-tint);border:1px solid #C9C7DD}
+.verdict.changed{background:var(--red);color:var(--white)}
+.verdict .big{font-size:20px;font-weight:700;line-height:1.25}
+.cmpbars{display:grid;gap:14px}
+.cb{display:grid;gap:4px}
+.cb .lbl{display:flex;justify-content:space-between;font-size:13px}
+.cb .b{height:12px;border-radius:3px;background:var(--cream-2)}
+.cb .b.s{background:var(--red)}
+.cb .b.s.win{background:var(--navy)}
+
+/* drawers */
+.overlay{position:fixed;inset:0;background:rgba(10,8,56,.28);z-index:20;display:flex;justify-content:flex-end}
+.drawer{width:min(620px,100%);height:100%;background:var(--white);box-shadow:-8px 0 24px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.drawer .dh{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.drawer .dh h2{flex:1;font-size:18px}
+.drawer .db{padding:18px 22px;overflow:auto;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0}
+.drawer .db > *{flex:none}
+.log{display:grid;gap:0}
+.log-row{display:grid;grid-template-columns:64px 130px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.log-row .tm{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.log-row .who{font-weight:600}
+.log-row .who.user{color:var(--red)}
+.formula{font-family:var(--mono);font-size:12.5px;background:var(--cream);border-radius:8px;padding:12px 14px;line-height:1.7}
+.empty{text-align:center;padding:48px 24px;display:grid;gap:12px;justify-items:center}
+.empty .ico{width:52px;height:52px;border-radius:14px;background:var(--red-tint);display:grid;place-items:center;color:var(--red);font-size:24px;font-weight:800}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);padding:10px 18px;border-radius:8px;font-size:13.5px;z-index:30;box-shadow:var(--shadow)}
+
+.hide-tech .tech{display:none}
+.split.pf{grid-template-columns:minmax(0,1fr) 320px}
+.split.wi{grid-template-columns:340px minmax(0,1fr)}
+@media (max-width:1440px){
+  :root{--pad:24px}
+  .body{grid-template-columns:232px minmax(0,1fr)}
+  nav.rail{padding:22px 10px}
+  .pf th,.pf td{padding:10px 9px}
+  .navstep{padding:9px 8px}
+  .season{display:none}
+  header.top{gap:12px;padding:0 18px}
+  .split.pf{grid-template-columns:minmax(0,1fr) 290px}
+  .split.wi{grid-template-columns:300px minmax(0,1fr)}
+  .kpi .v{font-size:23px}
+  h1{font-size:25px}
+}
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .split,.split.pf,.split.wi{grid-template-columns:1fr}
+  .runband,.merge-grid{grid-template-columns:1fr}
+  .reco{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .body{grid-template-columns:1fr}
+  nav.rail{flex-direction:row;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid var(--line)}
+  .rail-label,.crew{display:none}
+  .navstep{min-width:180px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .specs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .season{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <img class="logo" src="{{LOGO}}" alt="Tech Mahindra">
+    <div class="vsep"></div>
+    <div class="product">
+      <svg class="pmark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#E31837"/>
+        <path d="M7 12h18M10 12v11M22 12v11M7 23h18" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="16" cy="7.5" r="2.6" fill="#fff"/>
+      </svg>
+      <div>
+        <div class="pname">Sourcing Decision Desk</div>
+        <div class="ptag">Agentic sourcing intelligence · prepared for Carhartt</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <span class="season">Spring 2027 buy</span>
+    <span class="badge-sample">Sample data</span>
+    <button class="btn" data-action="toggle-tech" title="Show tool calls for a technical audience">Technical view: <b>Off</b></button>
+    <button class="btn" data-action="open-model">Cost model</button>
+    <button class="btn" data-action="open-audit">Audit log <span class="count num" id="audit-count">0</span></button>
+    <button class="btn ghost" data-action="reset" title="Reset the demo">Reset</button>
+  </header>
+  <div class="body">
+    <nav class="rail" id="rail" aria-label="Journey"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div id="overlay-root"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   SAMPLE DATA. Everything below is invented for the POC.
+   Labor rates, duty rates and freight are illustrative examples.
+   ===================================================================== */
+const COUNTRIES = {
+  MX:{name:'Mexico',     labor:0.16, extra:0,  fta:'USMCA',    freight:0.35},
+  GT:{name:'Guatemala',  labor:0.13, extra:0,  fta:'CAFTA-DR', freight:0.45},
+  HN:{name:'Honduras',   labor:0.12, extra:0,  fta:'CAFTA-DR', freight:0.45},
+  VN:{name:'Vietnam',    labor:0.09, extra:20, fta:null,       freight:0.90},
+  BD:{name:'Bangladesh', labor:0.05, extra:10, fta:null,       freight:1.00}
+};
+const CATEGORIES = {
+  OW:{name:'Outerwear', duty:7,  weight:1.6, hts:'6201 (example)', yd:[2.3,3.0], price:[4.0,4.8], trims:[2.5,3.8], smv:[36,58], waste:6, vol:[8000,24000],
+      fabric:'12 oz cotton duck',
+      styles:['Heavyweight duck chore coat','Quilt-lined duck jacket','Sherpa-lined duck vest','Insulated duck work coat','Washed duck field jacket','Duck hooded active jacket','Blanket-lined duck coat','Canvas shirt-jacket']},
+  BT:{name:'Bottoms', duty:10, weight:1.0, hts:'6203 (example)', yd:[1.5,2.6], price:[3.2,4.4], trims:[1.4,2.4], smv:[22,40], waste:7, vol:[10000,30000],
+      fabric:'10 oz duck / 11.5 oz denim',
+      styles:['Double-front duck work pant','Relaxed-fit 5-pocket jean','Duck bib overall','Ripstop cargo pant','Flannel-lined duck pant','Canvas carpenter jean','Stretch canvas utility pant','Washed duck work short']},
+  FL:{name:'Fleece', duty:12, weight:1.2, hts:'6110 (example)', yd:[1.6,2.2], price:[3.0,3.8], trims:[0.8,1.6], smv:[18,30], waste:8, vol:[12000,30000],
+      fabric:'10.5 oz cotton-poly fleece',
+      styles:['Midweight pullover hoodie','Heavyweight zip hoodie','Thermal-lined zip hoodie','Midweight crewneck sweatshirt','Quarter-zip fleece','Sherpa-lined zip hoodie','Waffle-knit thermal crew','Tech fleece jacket']},
+  TP:{name:'Tops', duty:12, weight:0.5, hts:'6109 / 6205 (example)', yd:[1.1,2.0], price:[2.0,3.6], trims:[0.5,1.4], smv:[10,28], waste:7, vol:[15000,30000],
+      fabric:'6.75 oz cotton jersey / flannel',
+      styles:['Heavyweight pocket T-shirt','Long-sleeve pocket T-shirt','Chamois work shirt','Flannel work shirt','Ripstop work shirt','Long-sleeve henley','Moisture-wicking work tee','Twill work shirt']},
+  FR:{name:'Flame-resistant', duty:8, weight:1.1, hts:'6211 (example)', yd:[1.4,3.0], price:[6.0,8.0], trims:[1.5,3.5], smv:[20,55], waste:6, vol:[5000,14000],
+      fabric:'FR cotton blend, NFPA 2112 type',
+      styles:['FR duck coat','FR twill work shirt','FR relaxed jean','FR coverall','FR zip hoodie','FR bib overall','FR pocket T-shirt','FR insulated vest']}
+};
+const SUPPLIERS = {
+  A:{id:'A', country:'MX', otd:94, aql:97, capa:1, lead:45, eff:0.72, oh:0.30, margin:0.12, capacity:30000, note:null},
+  B:{id:'B', country:'MX', otd:91, aql:95, capa:2, lead:42, eff:0.70, oh:0.32, margin:0.13, capacity:40000, note:null},
+  C:{id:'C', country:'GT', otd:89, aql:94, capa:2, lead:50, eff:0.68, oh:0.30, margin:0.12, capacity:22000, note:'Capacity is tight in Q1 2027'},
+  D:{id:'D', country:'GT', otd:96, aql:98, capa:0, lead:48, eff:0.74, oh:0.30, margin:0.11, capacity:26000, note:null},
+  E:{id:'E', country:'HN', otd:92, aql:96, capa:1, lead:52, eff:0.71, oh:0.30, margin:0.12, capacity:30000, note:null},
+  F:{id:'F', country:'VN', otd:88, aql:96, capa:1, lead:85, eff:0.78, oh:0.30, margin:0.12, capacity:60000, note:'Port congestion added about 6 days last quarter'},
+  G:{id:'G', country:'BD', otd:82, aql:91, capa:4, lead:95, eff:0.66, oh:0.28, margin:0.10, capacity:80000, note:'4 open CAPAs for seam strength'},
+  H:{id:'H', country:'VN', otd:90, aql:95, capa:2, lead:80, eff:0.76, oh:0.30, margin:0.12, capacity:50000, note:null}
+};
+const supName = id => `Supplier ${id} – ${COUNTRIES[SUPPLIERS[id].country].name}`;
+const supShort = id => `${id} · ${COUNTRIES[SUPPLIERS[id].country].name}`;
+
+function rng(seed){ let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+const r05 = v => Math.round(v * 20) / 20;
+const r1 = v => Math.round(v * 10) / 10;
+const between = (rand, lo, hi) => lo + (hi - lo) * rand();
+const pick = (rand, arr) => arr[Math.floor(rand() * arr.length)];
+
+const STYLES = (() => {
+  const rand = rng(20270314);
+  const out = [];
+  Object.entries(CATEGORIES).forEach(([cat, c]) => {
+    c.styles.forEach((name, i) => {
+      const code = `SDD-${cat}-${String(i + 1).padStart(3, '0')}`;
+      const st = {
+        id:code, code, cat, name, fabric:c.fabric,
+        yd:r1(between(rand, c.yd[0], c.yd[1])),
+        ydPrice:r05(between(rand, c.price[0], c.price[1])),
+        waste:c.waste,
+        trims:r05(between(rand, c.trims[0], c.trims[1])),
+        smv:Math.round(between(rand, c.smv[0], c.smv[1])),
+        volume:Math.round(between(rand, c.vol[0], c.vol[1]) / 1000) * 1000,
+        delivery:pick(rand, ['Feb 2027','Mar 2027','Apr 2027']),
+        quotes:[]
+      };
+      const trio = [pick(rand, ['A','B']), pick(rand, ['C','D','E']), pick(rand, ['F','G','H'])];
+      trio.forEach(sid => {
+        // Most quotes are close to fair; a minority carry a real gap.
+        const r = rand();
+        const markup = r < 0.62 ? between(rand, -0.035, 0.03) : r < 0.88 ? between(rand, 0.03, 0.08) : between(rand, 0.08, 0.15);
+        st.quotes.push({sid, fob:0, markup, moq:pick(rand,[2000,3000,5000]), terms:pick(rand,['Net 60','Net 45','Net 30'])});
+      });
+      out.push(st);
+    });
+  });
+  // Hero style for the demo: fixed numbers.
+  const hero = out[0];
+  Object.assign(hero, {yd:2.6, ydPrice:4.20, waste:6, trims:3.10, smv:42, volume:20000, delivery:'Mar 2027'});
+  hero.quotes = [
+    {sid:'B', fixed:33.90, moq:3000, terms:'Net 60'},
+    {sid:'D', fixed:29.40, moq:3000, terms:'Net 45'},
+    {sid:'F', fixed:22.20, moq:5000, terms:'Net 60'}
+  ];
+  out.forEach(st => st.quotes.forEach(q => {
+    q.fob = q.fixed != null ? q.fixed : r05(shouldCost(st, SUPPLIERS[q.sid], BASE_SC()).fob * (1 + q.markup));
+  }));
+  return out;
+})();
+const HERO = STYLES[0].id;
+const styleById = id => STYLES.find(s => s.id === id);
+
+/* =====================================================================
+   COST ENGINE: deterministic formulas. The agents never invent numbers.
+   ===================================================================== */
+function BASE_SC(){ return {extra:{VN:20, BD:10}, ftaOk:true, laborPct:0, fabricPct:0, volume:null}; }
+
+function shouldCost(st, sup, sc){
+  const c = COUNTRIES[sup.country];
+  const ydPrice = st.ydPrice * (1 + sc.fabricPct / 100);
+  const fabric = st.yd * ydPrice * (1 + st.waste / 100);
+  const rate = c.labor * (1 + sc.laborPct / 100);
+  const labor = st.smv * rate / sup.eff;
+  const overhead = labor * sup.oh;
+  const trims = st.trims;
+  const sub = fabric + trims + labor + overhead;
+  const margin = sub * sup.margin;
+  return {fabric, trims, labor, overhead, margin, fob:sub + margin, rate, ydPrice};
+}
+function dutyPct(st, sup, sc){
+  const c = COUNTRIES[sup.country], base = CATEGORIES[st.cat].duty;
+  if (c.fta) return sc.ftaOk ? 0 : base;
+  return base + (sc.extra[sup.country] ?? c.extra);
+}
+const freightOf = (st, sup) => COUNTRIES[sup.country].freight * CATEGORIES[st.cat].weight;
+function supplierScore(sup, w){
+  const clip = v => Math.max(0, Math.min(100, v));
+  const parts = {
+    otd: clip((sup.otd - 70) / 30 * 100),
+    aql: clip((sup.aql - 85) / 15 * 100),
+    capa: clip(100 - 20 * sup.capa),
+    lead: clip((120 - sup.lead) / 90 * 100)
+  };
+  const tot = w.otd + w.aql + w.capa + w.lead || 1;
+  return {parts, score:(parts.otd * w.otd + parts.aql * w.aql + parts.capa * w.capa + parts.lead * w.lead) / tot};
+}
+function flagsFor(st, sup, sc){
+  const c = COUNTRIES[sup.country], f = [];
+  if (c.fta === 'USMCA') f.push({t:'USMCA origin rules apply: confirm fabric origin', info:true});
+  if (c.fta === 'CAFTA-DR') f.push(sc.ftaOk ? {t:'Duty-free only if yarn-forward is met: confirm fabric origin', info:true} : {t:'Fabric does not meet yarn-forward in this scenario: base duty applies'});
+  if (!c.fta) f.push({t:`Extra US tariff of ${sc.extra[sup.country]} pts in this scenario (example rate)`});
+  if (sup.note) f.push({t:sup.note});
+  return f;
+}
+function evaluate(st, sc, w){
+  const volume = sc.volume || st.volume;
+  const rows = st.quotes.map(q => {
+    const sup = SUPPLIERS[q.sid];
+    const sh = shouldCost(st, sup, sc);
+    const duty = dutyPct(st, sup, sc);
+    const fr = freightOf(st, sup);
+    const landed = q.fob * (1 + duty / 100) + fr;
+    const ss = supplierScore(sup, w);
+    const gapPct = (q.fob - sh.fob) / sh.fob * 100;
+    const flags = flagsFor(st, sup, sc);
+    if (gapPct < -3) flags.unshift({t:`Quote is ${Math.abs(gapPct).toFixed(1)}% below should-cost: check for quality shortcuts or later price increases`});
+    return {q, sup, sid:q.sid, sh, duty, freight:fr, landed, gap:q.fob - sh.fob, gapPct, ss, flags};
+  });
+  const minLanded = Math.min(...rows.map(r => r.landed));
+  rows.forEach(r => {
+    r.costScore = minLanded / r.landed * 100;
+    r.overall = (r.costScore * w.cost + r.ss.score * (100 - w.cost)) / 100;
+  });
+  const ranked = [...rows].sort((a, b) => b.overall - a.overall);
+  const winner = ranked[0];
+  let split = null;
+  if (volume > winner.sup.capacity){
+    const second = ranked.find(r => r !== winner && r.sup.capacity >= volume - winner.sup.capacity) || ranked[1];
+    split = {first:winner, firstQty:winner.sup.capacity, second, secondQty:volume - winner.sup.capacity};
+  }
+  const cheapest = [...rows].sort((a, b) => a.landed - b.landed)[0];
+  return {st, rows, ranked, winner, split, volume, cheapest, minLanded};
+}
+function brief(ev){
+  const w = ev.winner, st = ev.st;
+  const target = Math.min(r05(w.sh.fob * 1.02), w.q.fob);
+  const walk = Math.max(target, Math.min(r05(w.q.fob - 0.05), r05(w.sh.fob * 1.05)));
+  const fair = w.q.fob <= w.sh.fob * 1.02;
+  const qtyAtWinner = ev.split ? ev.split.firstQty : ev.volume;
+  const saving = Math.max(0, (w.q.fob - target) * qtyAtWinner);
+  // Implied sewing minutes in the quote, at this supplier's rate and efficiency
+  const impliedLaborOh = (w.q.fob / (1 + w.sup.margin)) - w.sh.fabric - w.sh.trims;
+  const impliedSmv = impliedLaborOh / (1 + w.sup.oh) * w.sup.eff / w.sh.rate;
+  const others = ev.rows.filter(r => r !== w).sort((a, b) => a.landed - b.landed);
+  const points = [];
+  if (impliedSmv > st.smv * 1.03){
+    points.push(`Your price implies about ${Math.round(impliedSmv)} sewing minutes per unit. The spec supports about ${st.smv}, so labor looks ${Math.round((impliedSmv / st.smv - 1) * 100)}% higher than needed.`);
+  } else {
+    points.push(`Sewing time in your price is in line with the spec (about ${st.smv} minutes), so the gap is mainly in overhead and margin.`);
+  }
+  points.push(`Fabric is ${st.yd} yd of ${st.fabric} at about ${money(w.sh.ydPrice)}/yd with ${st.waste}% waste: ${money(w.sh.fabric)} per unit on our model.`);
+  points.push(ev.cheapest !== w
+    ? `We are planning ${fmtInt(qtyAtWinner)} units for ${st.delivery}. We have a lower landed offer from another region, but your delivery record (${w.sup.otd}% on time) is why we want to place it with you at the right price.`
+    : `We are planning ${fmtInt(qtyAtWinner)} units for ${st.delivery}. We have competitive offers from other regions, and your delivery record (${w.sup.otd}% on time) is why we want to place it with you at the right price.`);
+  const pushback = COUNTRIES[w.sup.country].fta
+    ? `Expect: "Labor and fabric costs went up this season." Answer: our model already uses ${money(w.sh.rate, 3)}/min labor and ${money(w.sh.ydPrice)}/yd fabric. Ask them to show which line moved.`
+    : `Expect: "The tariff is your cost, not ours." Answer: we compare landed cost, and at today's rate this offer only wins if the FOB comes down.`;
+  return {target, walk, fair, saving, impliedSmv, points, pushback, qty:qtyAtWinner};
+}
+
+/* =====================================================================
+   FORMATTING
+   ===================================================================== */
+const money = (v, d = 2) => '$' + v.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+const moneyK = v => Math.abs(v) >= 1e6 ? '$' + (v / 1e6).toFixed(2) + 'M' : '$' + Math.round(v / 1000).toLocaleString('en-US') + 'k';
+const fmtInt = v => Math.round(v).toLocaleString('en-US');
+const pct = (v, d = 1) => (v > 0 ? '+' : '') + v.toFixed(d) + '%';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const statusOf = g => g > 8 ? {k:'neg', t:'Negotiate'} : g > 3 ? {k:'rev', t:'Review'} : g < -3 ? {k:'low', t:'Below cost'} : {k:'fair', t:'Fair'};
+function whyNotCheapest(ev){
+  const c = ev.cheapest, w = ev.winner, why = [];
+  if (c.gapPct < -3) why.push(`its quote is ${Math.abs(c.gapPct).toFixed(1)}% below should-cost`);
+  if (c.sup.lead > w.sup.lead + 10) why.push(`its lead time is ${c.sup.lead} days vs ${w.sup.lead}`);
+  if (c.sup.otd < w.sup.otd) why.push(`it delivers on time ${c.sup.otd}% of the time vs ${w.sup.otd}%`);
+  if (!why.length) why.push('its supplier record scores lower');
+  return why.length > 1 ? why.slice(0, -1).join(', ') + ' and ' + why.at(-1) : why[0];
+}
+const TAG = {sample:'<span class="tag sample">Sample</span>', public:'<span class="tag public">Public</span>', expert:'<span class="tag expert">Expert</span>', calc:'<span class="tag calc">Calc</span>'};
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const DEFAULT_W = () => ({cost:60, otd:35, aql:35, capa:15, lead:15});
+const state = {
+  screen:'portfolio', styleId:HERO, weights:DEFAULT_W(), sc:BASE_SC(),
+  runs:{}, decisions:{}, audit:[], filters:{cat:'all', onlyGaps:false}, sort:{key:'gapUsd', dir:-1},
+  breakdownSid:null, drawer:null, portfolioRun:{status:'done', progress:40}, clock:new Date(2026, 11, 16, 9, 30, 0),
+  qid:'choose', tech:false, val:null
+};
+const QUESTIONS = [
+  {id:'choose', q:'Which supplier should I choose, and is the price fair?'},
+  {id:'cheapest', q:'Why not just take the cheapest offer?'},
+  {id:'target', q:'What target price should I negotiate for?'},
+  {id:'tariff', q:'What if the extra tariff on Vietnam is removed?'}
+];
+// The Foreman's direct answer to the question the buyer picked.
+function answerFor(qid, st){
+  const ev = evaluate(st, BASE_SC(), state.weights), br = brief(ev), w = ev.winner, c = ev.cheapest;
+  if (qid === 'cheapest'){
+    if (c === w) return {a:`Here the cheapest landed offer is also the best choice: ${supName(w.sid)} at ${money(w.landed)} per unit, with the strongest supplier record of the three.`, cta:[['Open the recommendation','reco']]};
+    const extra = (w.landed - c.landed) * ev.volume;
+    return {a:`The cheapest landed offer is ${supName(c.sid)} at ${money(c.landed)}, but ${whyNotCheapest(ev)}. ${supName(w.sid)} costs ${money(w.landed - c.landed)} more per unit (${moneyK(extra)} on ${fmtInt(ev.volume)} units) and carries much less delivery and quality risk.`, cta:[['Compare them side by side','reco']]};
+  }
+  if (qid === 'target'){
+    if (br.fair) return {a:`${supName(w.sid)}'s quote of ${money(w.q.fob)} is within 2% of should-cost, so the price is fair. Accept it and use the call to lock in delivery dates and terms.`, cta:[['Open the brief','brief']]};
+    return {a:`Aim for ${money(br.target)} with ${supName(w.sid)} and walk away above ${money(br.walk)}. The quote is ${money(w.q.fob)}, ${w.gapPct.toFixed(1)}% above should-cost. At target you save ${moneyK(br.saving)} on ${fmtInt(br.qty)} units.`, cta:[['Open the negotiation brief','brief']]};
+  }
+  if (qid === 'tariff'){
+    const sc = BASE_SC(); sc.extra.VN = 0;
+    const n = evaluate(st, sc, state.weights);
+    const vn = n.rows.find(r => COUNTRIES[r.sup.country].name === 'Vietnam');
+    const vnTxt = vn ? `${supName(vn.sid)}'s landed cost falls to ${money(vn.landed)}. ` : 'No Vietnam supplier quoted for this style. ';
+    return {a: n.winner.sid !== w.sid
+      ? `${vnTxt}The recommendation switches from Supplier ${w.sid} to ${supName(n.winner.sid)}, but only just, and its quote is still ${Math.abs(n.winner.gapPct).toFixed(1)}% below should-cost. The Foreman would ask for a quality and delivery plan before committing.`
+      : `${vnTxt}The recommendation stays with ${supName(w.sid)} because its delivery and quality record still outweighs the price gap.`, cta:[['Open the what-if','whatif']]};
+  }
+  return {a:`Choose ${supName(w.sid)}. Its landed cost is ${money(w.landed)} per unit and it has the strongest delivery and quality record. ${br.fair ? 'The price is fair: it is within 2% of should-cost.' : `The quote is ${w.gapPct.toFixed(1)}% above should-cost, so negotiate toward ${money(br.target)}.`}${c !== w ? ` ${supName(c.sid)} is cheaper on paper, but ${whyNotCheapest(ev)}.` : ''}`, cta:[['Open the recommendation','reco']]};
+}
+const AGENTS = [
+  {id:'fm', name:'Foreman', ico:'FM'},
+  {id:'sc', name:'Should-Cost', ico:'SC'},
+  {id:'tr', name:'Tariff & Country Risk', ico:'TR'},
+  {id:'se', name:'Supplier Evaluation', ico:'SE'},
+  {id:'nb', name:'Negotiation Brief', ico:'NB'}
+];
+function tick(sec){ state.clock = new Date(state.clock.getTime() + sec * 1000); }
+function clockStr(){ return state.clock.toTimeString().slice(0, 8); }
+function log(who, action, detail, user = false){
+  state.audit.unshift({tm:clockStr().slice(0, 5), who, action, detail, user});
+  document.getElementById('audit-count').textContent = state.audit.length;
+  if (state.drawer === 'audit') renderDrawer();
+}
+let toastTimer;
+function toast(msg){
+  let el = document.querySelector('.toast');
+  if (!el){ el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.remove(), 2600);
+}
+
+/* =====================================================================
+   PORTFOLIO
+   ===================================================================== */
+function portfolio(){
+  return STYLES.map(st => {
+    const ev = evaluate(st, BASE_SC(), state.weights);
+    const w = ev.winner;
+    return {st, ev, w, gapPct:w.gapPct, gapUsd:Math.max(0, w.gap) * ev.volume, status:statusOf(w.gapPct)};
+  });
+}
+
+/* =====================================================================
+   RAIL
+   ===================================================================== */
+const SCREENS = [
+  {id:'portfolio', t:'Portfolio', s:'40 styles at a glance'},
+  {id:'desk', t:'Decision desk', s:'One style, three quotes'},
+  {id:'run', t:'Agent run', s:'Watch the crew work'},
+  {id:'reco', t:'Recommendation', s:'Review and approve'},
+  {id:'whatif', t:'What-if', s:'Test the scenarios'},
+  {id:'value', t:'Value and next step', s:'What the pilot proves'}
+];
+function agentStatus(id){
+  const run = state.runs[state.styleId];
+  if (!run) return 'idle';
+  const steps = run.steps.filter(s => s.agent === id);
+  if (steps.some(s => s.status === 'running')) return 'running';
+  if (steps.length && steps.every(s => s.status === 'done')) return 'done';
+  if (steps.some(s => s.status === 'done')) return 'done';
+  return 'idle';
+}
+function renderRail(){
+  const run = state.runs[state.styleId];
+  const doneMap = {portfolio:true, desk:!!run, run:run && run.status === 'done', reco:!!state.decisions[state.styleId], whatif:false, value:false};
+  document.getElementById('rail').innerHTML = `
+    <div class="rail-label">Buyer journey</div>
+    ${SCREENS.map((s, i) => `
+      <button class="navstep ${state.screen === s.id ? 'active' : doneMap[s.id] ? 'done' : ''}" data-action="go" data-screen="${s.id}">
+        <span class="n">${i + 1}</span>
+        <span><span class="t">${s.t}</span><br><span class="s">${s.s}</span></span>
+      </button>`).join('')}
+    <div class="crew">
+      <div class="rail-label" style="padding:0 0 4px">The crew</div>
+      ${AGENTS.map(a => { const st = agentStatus(a.id); return `
+        <div class="crew-row"><span class="dot ${st}"></span><span class="nm">${a.name}</span><span class="st">${st === 'idle' ? 'Ready' : st === 'running' ? 'Working' : 'Done'}</span></div>`; }).join('')}
+    </div>`;
+}
+
+/* =====================================================================
+   SCREEN: PORTFOLIO
+   ===================================================================== */
+function renderPortfolio(){
+  const P = portfolio();
+  const running = state.portfolioRun.status === 'running';
+  const totalGap = P.reduce((a, p) => a + p.gapUsd, 0);
+  const spend = P.reduce((a, p) => a + p.w.q.fob * p.ev.volume, 0);
+  const above = P.reduce((a, p) => a + p.ev.rows.filter(r => r.gapPct > 3).length, 0);
+  const neg = P.filter(p => p.status.k === 'neg').length;
+  const rev = P.filter(p => p.status.k === 'rev').length;
+  const byCat = Object.keys(CATEGORIES).map(k => ({k, name:CATEGORIES[k].name, v:P.filter(p => p.st.cat === k).reduce((a, p) => a + p.gapUsd, 0)}));
+  const maxCat = Math.max(...byCat.map(c => c.v)) || 1;
+  let rows = P.filter(p => state.filters.cat === 'all' || p.st.cat === state.filters.cat);
+  if (state.filters.onlyGaps) rows = rows.filter(p => p.gapPct > 3);
+  const key = state.sort.key, dir = state.sort.dir;
+  const val = p => ({name:p.st.name, cat:p.st.cat, quote:p.w.q.fob, should:p.w.sh.fob, gapPct:p.gapPct, gapUsd:p.gapUsd, landed:p.w.landed, vol:p.ev.volume}[key]);
+  rows.sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * dir; });
+  const th = (k, label, cls = '') => `<th class="sort ${cls}" data-action="sort" data-key="${k}">${label}${state.sort.key === k ? (state.sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
+  const prog = state.portfolioRun.progress;
+  return `
+  <section class="screen">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 1 of 6 · Portfolio</div>
+        <h1>Where is Carhartt paying more than it should?</h1>
+        <p class="lead">Every night the Foreman checks every open quote against its should-cost and landed cost. Start with the styles that have the biggest gap.</p>
+      </div>
+      <button class="btn red lg" data-action="go-desk" data-style="${HERO}">Open the demo style</button>
+    </div>
+
+    <div class="runbar">
+      <span class="dot ${running ? 'running' : 'done'}"></span>
+      <b>${running ? 'Foreman is checking the portfolio…' : 'Overnight check complete'}</b>
+      <span class="muted small num">${running ? `${prog} of 40 styles` : '40 styles · 120 quotes · finished 06:04'}</span>
+      <div class="prog"><i style="width:${prog / 40 * 100}%"></i></div>
+      <button class="btn" data-action="rerun-portfolio" ${running ? 'disabled' : ''}>Re-run check</button>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><span class="k">Styles checked</span><span class="v num">${running ? prog : 40}</span><span class="d">5 product categories</span></div>
+      <div class="kpi"><span class="k">Quotes checked</span><span class="v num">${running ? prog * 3 : 120}</span><span class="d">3 suppliers per style</span></div>
+      <div class="kpi"><span class="k">Quotes above should-cost</span><span class="v num">${running ? '–' : above}</span><span class="d">by more than 3%</span></div>
+      <div class="kpi hl"><span class="k">Gap on recommended quotes</span><span class="v num">${running ? '–' : moneyK(totalGap)}</span><span class="d">${running ? 'at planned volumes' : `${(totalGap / spend * 100).toFixed(1)}% of ${moneyK(spend)} FOB spend`}</span></div>
+      <div class="kpi"><span class="k">Styles to act on</span><span class="v num">${running ? '–' : neg + rev}</span><span class="d">${running ? '' : `${neg} negotiate · ${rev} review`}</span></div>
+    </div>
+
+    <div class="split pf">
+      <div class="card" style="padding:0">
+        <div style="padding:16px 18px;display:grid;gap:12px">
+          <div class="card-head" style="margin:0"><h2>Styles</h2><span class="muted small">Click a row to open its decision desk</span></div>
+          <div class="filters">
+            <button class="fchip ${state.filters.cat === 'all' ? 'on' : ''}" data-action="filter-cat" data-cat="all">All</button>
+            ${Object.entries(CATEGORIES).map(([k, c]) => `<button class="fchip ${state.filters.cat === k ? 'on' : ''}" data-action="filter-cat" data-cat="${k}">${c.name}</button>`).join('')}
+            <label class="toggle"><input type="checkbox" id="only-gaps" data-action="only-gaps" ${state.filters.onlyGaps ? 'checked' : ''}> Only gaps above 3%</label>
+          </div>
+        </div>
+        <div class="tbl-scroll" style="border-top:1px solid var(--line)">
+          <table>
+            <thead><tr>
+              ${th('name', 'Style')}<th>Best supplier</th>${th('quote', 'Quote', 'r')}${th('should', 'Should-cost', 'r')}${th('gapPct', 'Gap', 'r')}${th('gapUsd', 'At volume', 'r')}<th>Status</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(p => `
+              <tr class="click" data-action="go-desk" data-style="${p.st.id}">
+                <td><b>${esc(p.st.name)}</b>${p.st.id === HERO ? ' <span class="tag sample">Demo</span>' : ''}<br><span class="code">${p.st.code} · ${CATEGORIES[p.st.cat].name}</span></td>
+                <td>${supShort(p.w.sid)}</td>
+                <td class="r num">${money(p.w.q.fob)}</td>
+                <td class="r num">${running ? '–' : money(p.w.sh.fob)}</td>
+                <td class="r num">${running ? '–' : pct(p.gapPct)}</td>
+                <td class="r num">${running ? '–' : moneyK(p.gapUsd)}</td>
+                <td>${running ? '<span class="chip fair">Queued</span>' : `<span class="chip ${p.status.k}">${p.status.t}</span>`}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:grid;gap:20px">
+        <div class="card">
+          <div class="card-head"><h2>Gap by category</h2><span class="muted small">at planned volumes</span></div>
+          <div class="hbars">
+            ${byCat.map(c => `<div class="hbar"><span>${c.name}</span><span class="track"><span class="fill" style="display:block;width:${running ? 0 : c.v / maxCat * 100}%"></span></span><span class="val num">${running ? '–' : moneyK(c.v)}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <h2 style="margin-bottom:8px">How to read this</h2>
+          <div class="keyrows small">
+            <div class="kr"><span class="chip neg">Negotiate</span><span>8%+ above should-cost</span></div>
+            <div class="kr"><span class="chip rev">Review</span><span>3–8% above should-cost</span></div>
+            <div class="kr"><span class="chip fair">Fair</span><span>Within 3% of should-cost</span></div>
+            <div class="kr"><span class="chip low">Below cost</span><span>3%+ below: a risk signal</span></div>
+            <div class="muted" style="margin-top:4px">Recommended supplier = best mix of landed cost (60%) and supplier performance (40%). You can change the weights on the Recommendation screen.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot-note">All supplier names, prices and performance data are sample data created for this proof of concept. Duty, labor and freight rates are illustrative examples.</div>
+  </section>`;
+}
+
+/* =====================================================================
+   SCREEN: DECISION DESK
+   ===================================================================== */
+function styleSelect(){
+  return `<select id="style-select" data-action="select-style" style="border:1px solid var(--cream-2);border-radius:8px;padding:8px 10px;background:var(--white);max-width:320px">
+    ${Object.entries(CATEGORIES).map(([k, c]) => `<optgroup label="${c.name}">${STYLES.filter(s => s.cat === k).map(s => `<option value="${s.id}" ${s.id === state.styleId ? 'selected' : ''}>${esc(s.name)}${s.id === HERO ? ' (demo)' : ''}</option>`).join('')}</optgroup>`).join('')}
+  </select>`;
+}
+function renderDesk(){
+  const st = styleById(state.styleId), cat = CATEGORIES[st.cat];
+  const run = state.runs[st.id];
+  return `
+  <section class="screen">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 2 of 6 · Decision desk</div>
+        <h1>${esc(st.name)}</h1>
+        <p class="lead"><span class="code">${st.code}</span> · ${cat.name} · ${st.fabric}. Three suppliers have quoted for the ${st.delivery} delivery.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">${styleSelect()}</div>
+    </div>
+
+    <div class="specs">
+      <div><span class="k">Planned volume ${TAG.sample}</span><span class="v num">${fmtInt(st.volume)} units</span></div>
+      <div><span class="k">Delivery window ${TAG.sample}</span><span class="v">${st.delivery}</span></div>
+      <div><span class="k">Tariff heading ${TAG.public}</span><span class="v">HTS ${cat.hts}</span></div>
+      <div><span class="k">Base US duty ${TAG.sample}</span><span class="v num">${cat.duty}% (example)</span></div>
+    </div>
+
+    <div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)">
+      <div class="card">
+        <div class="card-head"><h2>Bill of materials and construction</h2></div>
+        <div class="bom">
+          <div class="bom-row"><span>Fabric · ${st.fabric}</span><span class="num">${st.yd} yd</span>${TAG.sample}</div>
+          <div class="bom-row"><span>Fabric price</span><span class="num">${money(st.ydPrice)}/yd</span>${TAG.sample}</div>
+          <div class="bom-row"><span>Cutting waste</span><span class="num">${st.waste}%</span>${TAG.sample}</div>
+          <div class="bom-row"><span>Trims and packing</span><span class="num">${money(st.trims)}</span>${TAG.sample}</div>
+          <div class="bom-row"><span>Sewing time (SMV)</span><span class="num">${st.smv} min</span>${TAG.sample}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Supplier quotes</h2><span class="muted small">FOB, per unit</span></div>
+        <div class="grid3">
+          ${st.quotes.map(q => { const s = SUPPLIERS[q.sid], c = COUNTRIES[s.country]; return `
+          <div class="quote">
+            <div class="qh"><div><b>Supplier ${s.id}</b><div class="muted small">${c.name}<br>${c.fta || 'No trade deal'}</div></div>${TAG.sample}</div>
+            <div class="fob num">${money(q.fob)}</div>
+            <dl class="kv">
+              <dt>MOQ</dt><dd class="num">${fmtInt(q.moq)}</dd>
+              <dt>Lead time</dt><dd class="num">${s.lead} days</dd>
+              <dt>Capacity</dt><dd class="num">${fmtInt(s.capacity)}</dd>
+              <dt>Terms</dt><dd>${q.terms}</dd>
+            </dl>
+          </div>`; }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="ask">
+      <label>Ask the agents · pick a question</label>
+      <div class="qgrid" role="radiogroup" aria-label="Questions">
+        ${QUESTIONS.map(q => `<button class="qopt ${state.qid === q.id ? 'on' : ''}" role="radio" aria-checked="${state.qid === q.id}" data-action="pick-q" data-q="${q.id}">${esc(q.q)}</button>`).join('')}
+      </div>
+      <div class="row">
+        <button class="btn red lg" data-action="start-run">${run ? 'Ask again' : 'Ask the agents'}</button>
+        <span class="hint">Five agents work through cost, landed cost, supplier history and a negotiation brief. Nothing is final until you approve it.</span>
+      </div>
+    </div>
+    <div class="foot-note">All supplier names, prices and performance data are sample data created for this proof of concept.</div>
+  </section>`;
+}
+
+/* =====================================================================
+   AGENT RUN
+   ===================================================================== */
+function buildSteps(st, ev, br){
+  const L = [];
+  const names = ev.rows.map(r => `Supplier ${r.sid}`).join(', ');
+  const q = QUESTIONS.find(x => x.id === state.qid) || QUESTIONS[0];
+  L.push({id:'plan', agent:'fm', title:'Plan the run', doing:'Breaking your question into four tasks', tool:`plan(style="${st.code}", quotes=3)`, dur:1.4, group:1,
+    out:[`Question: "${q.q}"`, `Four tasks for ${names}: true cost, landed cost and risk, supplier record, negotiation brief`]});
+  const below = ev.rows.filter(r => r.gapPct < -3).map(r => `Warning: Supplier ${r.sid} quotes ${Math.abs(r.gapPct).toFixed(1)}% below should-cost`);
+  L.push({id:'cost', agent:'sc', title:'Calculate should-cost', doing:'Building the true cost of each quote', tool:`cost_engine.should_cost(${st.code}, ×3)`, dur:2.6, group:2,
+    out:ev.rows.map(r => `Supplier ${r.sid}: should-cost ${money(r.sh.fob)} vs quote ${money(r.q.fob)} (${pct(r.gapPct)})`).concat(below)});
+  L.push({id:'tariff', agent:'tr', title:'Landed cost and country risk', doing:'Adding duty, freight and country risk', tool:`tariff.lookup(HTS ${CATEGORIES[st.cat].hts.split(' ')[0]}) · freight.rate() · risk.check()`, dur:3.2, group:2,
+    out:ev.rows.map(r => `Supplier ${r.sid}: duty ${r.duty}% + freight ${money(r.freight)} → landed ${money(r.landed)}`).concat(ev.rows.flatMap(r => r.flags.filter(f => !f.info && !/should-cost/.test(f.t)).map(f => `Risk (${r.sid}): ${f.t}`)).slice(0, 2))});
+  L.push({id:'eval', agent:'se', title:'Score supplier history', doing:'Scoring each supplier’s track record', tool:'history.supplier(×3) · scorecard(weights)', dur:2.2, group:2,
+    out:ev.rows.map(r => `Supplier ${r.sid}: ${Math.round(r.ss.score)}/100 · on time ${r.sup.otd}% · AQL ${r.sup.aql}% · ${r.sup.capa} open CAPA · ${r.sup.lead}-day lead`)});
+  const rankTxt = ev.ranked.map(r => `${r.sid} ${Math.round(r.overall)}`).join(' · ');
+  L.push({id:'merge', agent:'fm', title:'Rank and check capacity', doing:'Weighing cost against risk and checking capacity', tool:`rank(cost=${state.weights.cost}%, supplier=${100 - state.weights.cost}%) · capacity.check(${fmtInt(ev.volume)})`, dur:1.8, group:3,
+    out:[ev.cheapest !== ev.winner ? `Cheapest landed is Supplier ${ev.cheapest.sid} (${money(ev.cheapest.landed)}), but ${whyNotCheapest(ev)}` : `Supplier ${ev.winner.sid} is also the cheapest landed offer`,
+      `Overall ranking: ${rankTxt} → Supplier ${ev.winner.sid} recommended`,
+      ev.split ? `Volume ${fmtInt(ev.volume)} exceeds Supplier ${ev.winner.sid} capacity ${fmtInt(ev.winner.sup.capacity)}: split ${fmtInt(ev.split.firstQty)} / ${fmtInt(ev.split.secondQty)} with Supplier ${ev.split.second.sid}`
+               : `Volume ${fmtInt(ev.volume)} fits Supplier ${ev.winner.sid} capacity of ${fmtInt(ev.winner.sup.capacity)}`]});
+  L.push({id:'brief', agent:'nb', title:'Write the negotiation brief', doing:'Preparing your negotiation brief', tool:`brief.write(supplier="${ev.winner.sid}")`, dur:2.0, group:4,
+    out:br.fair ? [`Quote is within 2% of should-cost: accept on price, negotiate terms`] : [`Target ${money(br.target)} · walk-away ${money(br.walk)}`, `Saving at target: ${moneyK(br.saving)} on ${fmtInt(br.qty)} units`, '3 talking points and expected pushback ready']});
+  L.push({id:'guard', agent:'fm', title:'Guardrail check', doing:'Checking the work before you see it', tool:'guardrail.verify()', dur:1.2, group:5,
+    out:['Every number traced to the cost engine ✓', 'No price committed, no supplier contacted ✓', 'Sample data tagged on every screen ✓', 'Ready for buyer approval']});
+  return L;
+}
+function startRun(){
+  const st = styleById(state.styleId);
+  const ev = evaluate(st, BASE_SC(), state.weights);
+  const br = brief(ev);
+  const steps = buildSteps(st, ev, br).map(s => ({...s, status:'waiting'}));
+  const run = {status:'running', steps, ev, br, t0:Date.now(), skip:false, qid:state.qid, dur:0};
+  state.runs[st.id] = run;
+  delete state.decisions[st.id];
+  state.breakdownSid = null;
+  log('Buyer', 'Asked the agents', `${st.name}: "${QUESTIONS.find(x => x.id === state.qid).q}"`, true);
+  go('run');
+  runGroup(run, 1);
+}
+// Keep the working agent in view while the run plays.
+function followRun(){
+  const main = document.getElementById('main'), el = main.querySelector('.astep.running');
+  if (!el) return;
+  const r = el.getBoundingClientRect(), m = main.getBoundingClientRect();
+  if (r.bottom > m.bottom - 16) main.scrollTo({top:main.scrollTop + r.bottom - m.bottom + 140, behavior:'smooth'});
+}
+function runGroup(run, g){
+  const group = run.steps.filter(s => s.group === g);
+  if (!group.length){
+    run.status = 'done';
+    // If the presenter skipped the animation, report the normal run time instead.
+    const groups = [...new Set(run.steps.map(s => s.group))];
+    const natural = groups.reduce((a, g) => a + Math.max(...run.steps.filter(s => s.group === g).map(s => s.dur)) + 0.35, 0);
+    run.dur = run.skip ? natural : (Date.now() - run.t0) / 1000;
+    const st = styleById(state.styleId);
+    log('Foreman', 'Run complete', `${st.name}: recommendation ready`);
+    if (state.screen === 'run') go('run'); else renderRail();
+    return;
+  }
+  group.forEach(s => { s.status = 'running'; });
+  if (state.screen === 'run'){ render(); followRun(); } else renderRail();
+  let pending = group.length;
+  group.forEach(s => {
+    const ms = run.skip ? 60 : s.dur * 1000;
+    setTimeout(() => {
+      s.status = 'done';
+      const an = AGENTS.find(a => a.id === s.agent).name;
+      tick(Math.round(s.dur));
+      log(an, s.title, s.out[0]);
+      pending -= 1;
+      if (state.screen === 'run') render(); else renderRail();
+      if (pending === 0) setTimeout(() => runGroup(run, g + 1), run.skip ? 20 : 350);
+    }, ms);
+  });
+}
+const gapCell = g => `<span class="chg ${Math.abs(g) > 3 ? 'up' : ''}">${pct(g)}</span>`;
+function mini(head, rows){
+  return `<div class="mt"><div class="r h">${head.map(h => `<span>${h}</span>`).join('')}</div>${rows.map(r => `<div class="r">${r.map(c => `<span class="num">${c}</span>`).join('')}</div>`).join('')}</div>`;
+}
+// What each agent hands back, shown inside its card once it is done.
+function stepResult(s, run){
+  const ev = run.ev, br = run.br;
+  if (s.id === 'plan') return `<div class="task-chips">${['True cost', 'Landed cost and risk', 'Supplier record', 'Negotiation brief'].map(t => `<span>${t}</span>`).join('')}</div>`;
+  if (s.id === 'cost'){
+    const below = ev.rows.filter(r => r.gapPct < -3).map(r => `<div class="flag">Supplier ${r.sid} quotes ${Math.abs(r.gapPct).toFixed(1)}% below should-cost</div>`).join('');
+    return mini(['Supplier', 'Should-cost', 'Quote', 'Gap'], ev.rows.map(r => [supShort(r.sid), money(r.sh.fob), money(r.q.fob), gapCell(r.gapPct)])) + below;
+  }
+  if (s.id === 'tariff'){
+    const risk = ev.rows.flatMap(r => r.flags.filter(f => !f.info && !/should-cost/.test(f.t)).map(f => `Supplier ${r.sid}: ${f.t}`))[0];
+    return mini(['Supplier', 'Duty', 'Freight', 'Landed'], ev.rows.map(r => [supShort(r.sid), r.duty + '%', money(r.freight), `<b>${money(r.landed)}</b>`])) + (risk ? `<div class="flag">${esc(risk)}</div>` : '');
+  }
+  if (s.id === 'eval') return mini(['Supplier', 'Score', 'On time', 'Lead time'], ev.rows.map(r => [supShort(r.sid), `<b>${Math.round(r.ss.score)}</b>/100`, r.sup.otd + '%', r.sup.lead + ' days']));
+  if (s.id === 'merge'){
+    const notes = [];
+    notes.push(ev.cheapest !== ev.winner
+      ? `<div class="flag">Cheapest landed is Supplier ${ev.cheapest.sid} at ${money(ev.cheapest.landed)}, but ${whyNotCheapest(ev)}.</div>`
+      : `<div class="flag info">Supplier ${ev.winner.sid} is also the cheapest landed offer.</div>`);
+    notes.push(ev.split
+      ? `<div class="flag">Volume of ${fmtInt(ev.volume)} is more than Supplier ${ev.winner.sid} can make: split ${fmtInt(ev.split.firstQty)} / ${fmtInt(ev.split.secondQty)} with Supplier ${ev.split.second.sid}.</div>`
+      : `<div class="flag info">${fmtInt(ev.volume)} units fit Supplier ${ev.winner.sid}'s capacity of ${fmtInt(ev.winner.sup.capacity)}.</div>`);
+    return `<div class="merge-grid">
+      <div class="rank">${ev.ranked.map(r => `<div class="r ${r === ev.winner ? 'win' : ''}"><span>${supName(r.sid)}${r === ev.winner ? ' ★' : ''}</span><span class="track"><span class="fill" style="width:${r.overall}%"></span></span><span class="num" style="text-align:right">${Math.round(r.overall)}</span></div>`).join('')}</div>
+      <div class="notes">${notes.join('')}</div></div>`;
+  }
+  if (s.id === 'brief') return br.fair
+    ? `<div class="flag info">The quote is within 2% of should-cost: accept on price and negotiate delivery and terms.</div>`
+    : `<div class="stats3"><div><span class="k">Target</span><span class="v num">${money(br.target)}</span></div><div><span class="k">Walk-away</span><span class="v num">${money(br.walk)}</span></div><div><span class="k">Saving</span><span class="v num">${moneyK(br.saving)}</span></div></div>
+       <div class="flag info">3 talking points and the expected pushback are ready</div>`;
+  return `<div class="checks">${['Every number comes from the cost engine', 'No price agreed, no supplier contacted', 'Sample data is labelled on every screen', 'Ready for your approval'].map(t => `<div>${t}</div>`).join('')}</div>`;
+}
+function stepCard(s, run){
+  const a = AGENTS.find(x => x.id === s.agent);
+  return `<div class="astep ${s.status}" style="--dur:${s.dur}s">
+    <div class="ah"><span class="agent-ico ${a.id}">${a.ico}</span><h3>${a.name}</h3><span class="pill ${s.status}">${s.status === 'waiting' ? 'Waiting' : s.status === 'running' ? 'Working' : 'Done'}</span><span class="doing">${s.doing}</span></div>
+    <div class="tool tech">${esc(s.tool)}</div>
+    ${s.status === 'done' ? `<div class="ares">${stepResult(s, run)}</div>` : '<div class="abar"><i></i></div>'}
+  </div>`;
+}
+const phaseState = steps => steps.every(s => s.status === 'done') ? 'done' : steps.some(s => s.status !== 'waiting') ? 'running' : 'waiting';
+function renderRun(){
+  const st = styleById(state.styleId);
+  const run = state.runs[st.id];
+  if (!run){
+    return `<section class="screen"><div class="shead"><div><div class="eyebrow">Step 3 of 6 · Agent run</div><h1>${esc(st.name)}</h1></div>${styleSelect()}</div>
+      <div class="card empty"><div class="ico">▶</div><h2>The agents have not run for this style yet</h2><p class="muted" style="margin:0">Start from the decision desk, or run them straight away.</p>
+      <button class="btn red lg" data-action="start-run">Ask the agents</button></div></section>`;
+  }
+  const S = id => run.steps.find(s => s.id === id);
+  const done = run.status === 'done';
+  const q = QUESTIONS.find(x => x.id === run.qid) || QUESTIONS[0];
+  const ans = done ? answerFor(run.qid, st) : null;
+  const nDone = run.steps.filter(s => s.status === 'done').length, nAll = run.steps.length;
+  const phase = (n, title, sub, ids, inner) => {
+    const ps = phaseState(ids.map(S));
+    return `<div class="phase ${ps}"><span class="pn">${ps === 'done' ? '✓' : n}</span>
+      <div class="phase-body"><div class="ph"><b>${title}</b><span>${sub}</span></div>${inner}</div></div>`;
+  };
+  return `
+  <section class="screen">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 3 of 6 · Agent run</div>
+        <h1>${done ? 'The crew has an answer' : 'The crew is working…'}</h1>
+        <p class="lead">${esc(st.name)} · ${st.code}. Each agent does one job and reports back to the Foreman.</p>
+      </div>
+      ${done ? `<button class="btn" data-action="go" data-screen="desk">Ask another question</button>`
+             : `<button class="btn" data-action="skip-run">Skip animation</button>`}
+    </div>
+    ${done ? `<div class="answer">
+      <span class="q">You asked: “${esc(q.q)}” · answered in ${run.dur.toFixed(0)} seconds</span>
+      <span class="a">${esc(ans.a)}</span>
+      <div class="row">${ans.cta.map(c => `<button class="btn red lg" data-action="answer-go" data-to="${c[1]}">${c[0]}</button>`).join('')}</div>
+    </div>` : `<div class="runband">
+      <div><span class="k">You asked</span><span class="q">“${esc(q.q)}”</span></div>
+      <div class="meter"><div class="top"><span>${nDone} of ${nAll} tasks done</span><span class="num">${Math.round(nDone / nAll * 100)}%</span></div><div class="bar"><i style="width:${nDone / nAll * 100}%"></i></div></div>
+    </div>`}
+    <div class="pipeline">
+      ${phase(1, 'Plan', 'The Foreman splits your question into tasks', ['plan'], stepCard(S('plan'), run))}
+      ${phase(2, 'Analyse', 'Three agents work at the same time', ['cost', 'tariff', 'eval'], `<div class="grid3">${stepCard(S('cost'), run)}${stepCard(S('tariff'), run)}${stepCard(S('eval'), run)}</div>`)}
+      ${phase(3, 'Decide', 'The Foreman weighs cost against risk', ['merge'], stepCard(S('merge'), run))}
+      ${phase(4, 'Prepare and check', 'A brief for the buyer, then a final check', ['brief', 'guard'], `<div class="grid2">${stepCard(S('brief'), run)}${stepCard(S('guard'), run)}</div>`)}
+    </div>
+  </section>`;
+}
+
+/* =====================================================================
+   SCREEN: RECOMMENDATION
+   ===================================================================== */
+function renderReco(){
+  const st = styleById(state.styleId);
+  const run = state.runs[st.id];
+  if (!run || run.status !== 'done'){
+    return `<section class="screen"><div class="shead"><div><div class="eyebrow">Step 4 of 6 · Recommendation</div><h1>${esc(st.name)}</h1></div>${styleSelect()}</div>
+      <div class="card empty"><div class="ico">?</div><h2>No recommendation yet</h2><p class="muted" style="margin:0">${run ? 'The agents are still working.' : 'Ask the agents first. The recommendation appears when their run is complete.'}</p>
+      <button class="btn red lg" data-action="${run ? 'go' : 'start-run'}" data-screen="run">${run ? 'Watch the run' : 'Ask the agents'}</button></div></section>`;
+  }
+  const ev = evaluate(st, BASE_SC(), state.weights);
+  const br = brief(ev);
+  const w = ev.winner;
+  const sel = ev.rows.find(r => r.sid === state.breakdownSid) || w;
+  const dec = state.decisions[st.id];
+  const parts = [
+    ['Fabric', sel.sh.fabric, 'var(--red)', `${st.yd} yd × ${money(sel.sh.ydPrice)} × (1 + ${st.waste}%)`, 'sample'],
+    ['Trims and packing', sel.sh.trims, 'var(--red-soft)', 'from BOM', 'sample'],
+    ['Labor', sel.sh.labor, 'var(--navy)', `${st.smv} min × ${money(sel.sh.rate, 3)}/min ÷ ${Math.round(sel.sup.eff * 100)}% efficiency`, 'sample'],
+    ['Overhead', sel.sh.overhead, 'var(--steel)', `${Math.round(sel.sup.oh * 100)}% of labor`, 'sample'],
+    ['Supplier margin', sel.sh.margin, 'var(--cream-2)', `${Math.round(sel.sup.margin * 100)}% of subtotal`, 'sample']
+  ];
+  const reasons = [];
+  reasons.push(ev.cheapest === w ? `Cheapest landed cost of the three: ${money(w.landed)} per unit.` : `Landed cost of ${money(w.landed)} per unit, only ${((w.landed / ev.cheapest.landed - 1) * 100).toFixed(1)}% above the cheapest offer.`);
+  reasons.push(`Strongest supplier record: ${w.sup.otd}% on time, ${w.sup.aql}% AQL pass, ${w.sup.capa} open CAPA, ${w.sup.lead}-day lead time.`);
+  reasons.push(br.fair ? `The quote is within 2% of should-cost (${money(w.sh.fob)}), so the price is fair.` : `The quote is ${w.gapPct.toFixed(1)}% above should-cost (${money(w.sh.fob)}), so there is room to negotiate.`);
+  const metric = (label, fn) => `<tr><td>${label}</td>${ev.rows.map(r => `<td class="r num ${r === w ? 'win' : ''}">${fn(r)}</td>`).join('')}</tr>`;
+  return `
+  <section class="screen" style="padding-bottom:20px">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 4 of 6 · Recommendation</div>
+        <h1>${esc(st.name)}</h1>
+        <p class="lead">The agents recommend a supplier and a target price. You decide.</p>
+      </div>
+      ${styleSelect()}
+    </div>
+
+    <div class="reco">
+      <div>
+        <div class="eyebrow">Recommended by the Foreman</div>
+        <h2>${supName(w.sid)}${ev.split ? ` + ${supName(ev.split.second.sid)}` : ''}</h2>
+        <ul>${reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
+      </div>
+      <div class="nums">
+        <div><span class="k">Quote</span><span class="v num">${money(w.q.fob)}</span></div>
+        <div><span class="k">Should-cost</span><span class="v num">${money(w.sh.fob)}</span></div>
+        <div><span class="k">Target price</span><span class="v num">${money(br.target)}</span></div>
+        <div><span class="k">Saving at target</span><span class="v num">${moneyK(br.saving)}</span></div>
+      </div>
+      ${ev.split ? `<div class="note">Capacity: Supplier ${w.sid} can make ${fmtInt(ev.split.firstQty)} of ${fmtInt(ev.volume)} units. The Foreman suggests placing ${fmtInt(ev.split.secondQty)} units with Supplier ${ev.split.second.sid}.</div>`
+                 : ev.cheapest !== w ? `<div class="note"><b>Why not the cheapest?</b> ${supName(ev.cheapest.sid)} has the lowest landed cost (${money(ev.cheapest.landed)}), but ${whyNotCheapest(ev)}. Paying ${money(w.landed - ev.cheapest.landed)} more per unit buys a much safer delivery. Move the cost weight below to see when the cheapest would win.</div>` : ''}
+    </div>
+
+    <div class="card" style="padding:0">
+      <div style="padding:16px 18px" class="card-head"><h2>Side by side</h2><span class="muted small">per unit, ${fmtInt(ev.volume)} units planned</span></div>
+      <div class="tbl-wrap" style="border:0;border-top:1px solid var(--line);border-radius:0">
+        <table class="cmp">
+          <thead><tr><th></th>${ev.rows.map(r => `<th class="r ${r === w ? 'win' : ''}">${supName(r.sid)}${r === w ? ' ★' : ''}</th>`).join('')}</tr></thead>
+          <tbody>
+            ${metric('Quote FOB', r => money(r.q.fob))}
+            ${metric('Should-cost FOB', r => money(r.sh.fob))}
+            ${metric('Gap to should-cost', r => `<span class="chg ${r.gapPct > 3 ? 'up' : ''}">${pct(r.gapPct)}</span>`)}
+            ${metric('US duty (example)', r => r.duty + '%')}
+            ${metric('Freight to US DC', r => money(r.freight))}
+            ${metric('<b>Landed cost</b>', r => `<b>${money(r.landed)}</b>`)}
+            ${metric('Supplier score', r => Math.round(r.ss.score) + ' / 100')}
+            ${metric('Lead time', r => r.sup.lead + ' days')}
+            ${metric('Capacity', r => fmtInt(r.sup.capacity))}
+            ${metric('<b>Overall score</b>', r => `<b>${Math.round(r.overall)}</b>`)}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border-top:1px solid var(--line)">
+        ${ev.rows.map(r => `<div style="display:grid;gap:4px">${r.flags.map(f => `<div class="flag ${f.info ? 'info' : ''}">${esc(f.t)}</div>`).join('')}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h2>Should-cost breakdown</h2>
+          <div class="tabs">${ev.rows.map(r => `<button class="tab ${r === sel ? 'on' : ''}" data-action="breakdown" data-sid="${r.sid}">Supplier ${r.sid}</button>`).join('')}</div>
+        </div>
+        <div class="stack" role="img" aria-label="Should-cost breakdown">${parts.map(p => `<span style="width:${p[1] / sel.sh.fob * 100}%;background:${p[2]}" title="${p[0]} ${money(p[1])}"></span>`).join('')}</div>
+        <div class="legend" style="margin:10px 0 6px">${parts.map(p => `<span><i style="background:${p[2]}"></i>${p[0]}</span>`).join('')}</div>
+        <div class="lines">
+          ${parts.map(p => `<div class="line"><span>${p[0]} ${TAG[p[4]]}<br><span class="f">${esc(p[3])}</span></span><span class="num">${money(p[1])}</span><span class="r muted num small" style="text-align:right">${(p[1] / sel.sh.fob * 100).toFixed(0)}%</span></div>`).join('')}
+          <div class="line total"><span>Should-cost FOB ${TAG.calc}</span><span class="num">${money(sel.sh.fob)}</span><span class="num small" style="text-align:right">vs ${money(sel.q.fob)}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>How the ranking is weighted</h2><button class="btn ghost" data-action="reset-weights">Reset weights</button></div>
+        <div class="sliders">
+          <div class="sl"><label for="w-cost">Landed cost</label><input type="range" id="w-cost" min="0" max="100" step="5" value="${state.weights.cost}" data-action="weight" data-k="cost"><output class="num">${state.weights.cost}%</output></div>
+          <div class="sl"><label>Supplier record</label><span class="small muted">the rest, split below</span><output class="num">${100 - state.weights.cost}%</output></div>
+          <div class="sl"><label for="w-otd">· On-time delivery</label><input type="range" id="w-otd" min="0" max="60" step="5" value="${state.weights.otd}" data-action="weight" data-k="otd"><output class="num">${state.weights.otd}</output></div>
+          <div class="sl"><label for="w-aql">· Quality (AQL)</label><input type="range" id="w-aql" min="0" max="60" step="5" value="${state.weights.aql}" data-action="weight" data-k="aql"><output class="num">${state.weights.aql}</output></div>
+          <div class="sl"><label for="w-capa">· Open CAPAs</label><input type="range" id="w-capa" min="0" max="60" step="5" value="${state.weights.capa}" data-action="weight" data-k="capa"><output class="num">${state.weights.capa}</output></div>
+          <div class="sl"><label for="w-lead">· Lead time</label><input type="range" id="w-lead" min="0" max="60" step="5" value="${state.weights.lead}" data-action="weight" data-k="lead"><output class="num">${state.weights.lead}</output></div>
+        </div>
+        <h3 style="margin:18px 0 10px">Overall score</h3>
+        <div class="scores">
+          ${ev.ranked.map(r => `<div class="score ${r === w ? 'win' : ''}"><span>${supName(r.sid)}</span><span class="track"><span class="fill" style="display:block;width:${r.overall}%"></span></span><span class="num" style="text-align:right;font-weight:600">${Math.round(r.overall)}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="brief-card">
+      <div class="card-head"><h2>Negotiation brief · ${supName(w.sid)}</h2><button class="btn" data-action="copy-brief">Copy brief</button></div>
+      <div class="brief">
+        <div class="tw">
+          <div><span class="k">Target price</span><span class="v num">${money(br.target)}</span></div>
+          <div><span class="k">Walk-away price</span><span class="v num">${money(br.walk)}</span></div>
+          <div><span class="k">Saving at target</span><span class="v num">${moneyK(br.saving)}</span></div>
+        </div>
+        ${br.fair ? '<p style="margin:0">The quote is within 2% of should-cost. Accept on price and use the call to lock in delivery dates and payment terms.</p>' : ''}
+        <ol>${br.points.map(p => `<li>${esc(p)}</li>`).join('')}</ol>
+        <div class="pushback">${esc(br.pushback)}</div>
+      </div>
+    </div>
+
+    ${dec ? `<div class="decided ${dec.type === 'reject' ? 'rej' : ''}"><b>${dec.type === 'approve' ? 'Approved' : dec.type === 'change' ? 'Changed' : 'Rejected'}</b><span>${esc(dec.text)} · ${dec.tm}</span><span class="spacer"></span><button class="btn" data-action="undo-decision">Undo</button><button class="btn red" data-action="go" data-screen="whatif">Try a what-if</button></div>`
+          : `<div class="decide">
+              <span class="msg">Nothing is final until you decide. Every action is logged.</span>
+              <select id="change-to" aria-label="Choose another supplier">${ev.rows.filter(r => r !== w).map(r => `<option value="${r.sid}">${supName(r.sid)}</option>`).join('')}</select>
+              <button class="btn" data-action="decide" data-type="change">Change supplier</button>
+              <input id="reject-reason" placeholder="Reason to reject" aria-label="Reason to reject">
+              <button class="btn" data-action="decide" data-type="reject">Reject</button>
+              <button class="btn red lg" data-action="decide" data-type="approve">Approve recommendation</button>
+            </div>`}
+  </section>`;
+}
+
+/* =====================================================================
+   SCREEN: WHAT-IF
+   ===================================================================== */
+function renderWhatIf(){
+  const st = styleById(state.styleId);
+  const sc = state.sc;
+  const base = evaluate(st, BASE_SC(), state.weights);
+  const scen = evaluate(st, sc, state.weights);
+  const bb = brief(base), sb = brief(scen);
+  const changed = base.winner.sid !== scen.winner.sid || !!base.split !== !!scen.split;
+  const maxL = Math.max(...base.rows.map(r => r.landed), ...scen.rows.map(r => r.landed));
+  // Portfolio impact
+  let flips = [], baseSpend = 0, scenSpend = 0;
+  STYLES.forEach(s => {
+    const scS = {...sc, volume:s.id === st.id ? sc.volume : null};
+    const b = evaluate(s, BASE_SC(), state.weights), n = evaluate(s, scS, state.weights);
+    baseSpend += b.winner.landed * b.volume;
+    scenSpend += n.winner.landed * n.volume;
+    if (b.winner.sid !== n.winner.sid) flips.push({s, from:b.winner.sid, to:n.winner.sid});
+  });
+  const isBase = JSON.stringify(sc) === JSON.stringify(BASE_SC());
+  const ctl = (id, label, min, max, step, value, fmt, sub) => `
+    <div class="ctl"><div class="top"><label for="${id}">${label}</label><b class="num">${fmt(value)}</b></div>
+    <input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}" data-action="sc" data-k="${id}">${sub ? `<span class="sub">${sub}</span>` : ''}</div>`;
+  return `
+  <section class="screen">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 5 of 6 · What-if</div>
+        <h1>What happens if the world changes?</h1>
+        <p class="lead">Change a tariff, a cost or the volume. All five agents re-run instantly on ${esc(st.name)}, and the Foreman shows what the change does to the whole portfolio.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">${styleSelect()}<button class="btn red lg" data-action="go" data-screen="value">See the value</button></div>
+    </div>
+    <div class="split wi">
+      <div style="display:grid;gap:20px">
+        <div class="card">
+          <div class="card-head"><h2>Try a scenario</h2></div>
+          <div class="presets">
+            <button class="preset" data-action="preset" data-p="vn0"><b>Extra tariff on Vietnam removed</b><span>Vietnam goes from +20 pts to 0</span></button>
+            <button class="preset" data-action="preset" data-p="vn40"><b>Extra tariff on Asia doubles</b><span>Vietnam +40 pts, Bangladesh +20 pts</span></button>
+            <button class="preset" data-action="preset" data-p="fta"><b>Fabric fails origin rules</b><span>Mexico and Central America lose duty-free status</span></button>
+            <button class="preset" data-action="preset" data-p="vol"><b>Volume doubles</b><span>${fmtInt(st.volume * 2)} units for this style</span></button>
+            <button class="preset" data-action="preset" data-p="cotton"><b>Cotton price +15%</b><span>Fabric cost rises for every supplier</span></button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Fine-tune</h2><button class="btn ghost" data-action="reset-sc" ${isBase ? 'disabled' : ''}>Back to today</button></div>
+          <div class="controls">
+            ${ctl('vn', 'Extra US tariff · Vietnam', 0, 40, 1, sc.extra.VN, v => v + ' pts', 'Today (example): 20 pts on top of base duty')}
+            ${ctl('bd', 'Extra US tariff · Bangladesh', 0, 40, 1, sc.extra.BD, v => v + ' pts', 'Today (example): 10 pts')}
+            <label class="toggle" style="margin:0"><input type="checkbox" id="fta" data-action="sc" data-k="fta" ${sc.ftaOk ? 'checked' : ''}> Fabric meets USMCA / CAFTA-DR origin rules</label>
+            ${ctl('labor', 'Labor rates, all countries', -20, 30, 1, sc.laborPct, v => pct(v, 0))}
+            ${ctl('fabric', 'Fabric price', -20, 30, 1, sc.fabricPct, v => pct(v, 0))}
+            ${ctl('volume', 'Volume for this style', 5000, 60000, 1000, sc.volume || st.volume, v => fmtInt(v), `Planned today: ${fmtInt(st.volume)} units`)}
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:20px">
+        <div class="verdict ${changed ? 'changed' : 'same'}">
+          <span class="small" style="opacity:.85">${isBase ? 'No change applied yet' : 'Scenario result'}</span>
+          <span class="big">${base.winner.sid !== scen.winner.sid
+            ? `Recommendation changes from Supplier ${base.winner.sid} to ${supName(scen.winner.sid)}${scen.split ? `, with ${fmtInt(scen.split.secondQty)} units at Supplier ${scen.split.second.sid}` : ''}`
+            : scen.split && !base.split
+            ? `Order splits: Supplier ${scen.winner.sid} makes ${fmtInt(scen.split.firstQty)} units (its capacity) and ${supName(scen.split.second.sid)} makes ${fmtInt(scen.split.secondQty)}`
+            : `Recommendation stays with ${supName(scen.winner.sid)}`}</span>
+          <span>${scen.cheapest.sid !== scen.winner.sid ? `Cheapest landed is Supplier ${scen.cheapest.sid} at ${money(scen.cheapest.landed)}, but Supplier ${scen.winner.sid} still scores higher overall.` : `Supplier ${scen.winner.sid} is also the cheapest landed offer at ${money(scen.winner.landed)}.`}
+            Target price ${money(bb.target)} → <b>${money(sb.target)}</b>.</span>
+          ${scen.winner.gapPct < -3 ? `<span><b>Caution:</b> Supplier ${scen.winner.sid} quotes ${Math.abs(scen.winner.gapPct).toFixed(1)}% below should-cost. Ask for a quality and delivery plan before committing.</span>` : ''}
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Landed cost per unit</h2><span class="legend"><span><i style="background:var(--cream-2)"></i>Today</span><span><i style="background:var(--red)"></i>Scenario</span><span><i style="background:var(--navy)"></i>Scenario winner</span></span></div>
+          <div class="cmpbars">
+            ${scen.rows.map(r => { const b = base.rows.find(x => x.sid === r.sid); const d = r.landed - b.landed; return `
+            <div class="cb">
+              <div class="lbl"><span><b>${supName(r.sid)}</b> · duty ${b.duty}% → ${r.duty}%</span><span class="num">${money(b.landed)} → <b>${money(r.landed)}</b> ${Math.abs(d) > 0.005 ? `<span class="chg ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : ''}${money(d)}</span>` : ''}</span></div>
+              <div class="b" style="width:${b.landed / maxL * 100}%"></div>
+              <div class="b s ${r === scen.winner ? 'win' : ''}" style="width:${r.landed / maxL * 100}%"></div>
+            </div>`; }).join('')}
+          </div>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="padding:16px 18px" class="card-head"><h2>Ranking, today vs scenario</h2></div>
+          <div class="tbl-wrap" style="border:0;border-top:1px solid var(--line);border-radius:0">
+            <table>
+              <thead><tr><th>Supplier</th><th class="r">Should-cost</th><th class="r">Gap</th><th class="r">Score today</th><th class="r">Score in scenario</th><th class="r">Rank</th></tr></thead>
+              <tbody>${scen.rows.map(r => { const b = base.rows.find(x => x.sid === r.sid); const rb = base.ranked.indexOf(b) + 1, rs = scen.ranked.indexOf(r) + 1; return `
+                <tr><td><b>${supName(r.sid)}</b></td><td class="r num">${money(r.sh.fob)}</td><td class="r num">${pct(r.gapPct)}</td><td class="r num">${Math.round(b.overall)}</td><td class="r num"><b>${Math.round(r.overall)}</b></td>
+                <td class="r num">${rb === rs ? rs : `${rb} → <b class="chg ${rs < rb ? 'down' : 'up'}">${rs}</b>`}</td></tr>`; }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Portfolio impact · all 40 styles</h2></div>
+          <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+            <div class="kpi"><span class="k">Landed spend today</span><span class="v num">${moneyK(baseSpend)}</span><span class="d">recommended suppliers</span></div>
+            <div class="kpi ${Math.abs(scenSpend - baseSpend) > 1 ? 'hl' : ''}"><span class="k">Landed spend in scenario</span><span class="v num">${moneyK(scenSpend)}</span><span class="d">${pct((scenSpend / baseSpend - 1) * 100)}</span></div>
+            <div class="kpi"><span class="k">Styles that switch supplier</span><span class="v num">${flips.length}</span><span class="d">of 40</span></div>
+          </div>
+          ${flips.length ? `<div style="margin-top:12px;display:grid;gap:4px" class="small">${flips.slice(0, 6).map(f => `<div>${esc(f.s.name)}: Supplier ${f.from} → <b>Supplier ${f.to}</b></div>`).join('')}${flips.length > 6 ? `<div class="muted">and ${flips.length - 6} more</div>` : ''}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="foot-note">Tariff, duty, labor and freight values are illustrative examples for the proof of concept, not current rates.</div>
+  </section>`;
+}
+
+/* =====================================================================
+   DRAWERS
+   ===================================================================== */
+/* =====================================================================
+   SCREEN: VALUE AND NEXT STEP
+   ===================================================================== */
+function portfolioTotals(){
+  const P = portfolio();
+  const spend = P.reduce((a, p) => a + p.w.q.fob * p.ev.volume, 0);
+  const flagged = P.filter(p => p.gapPct > 3);
+  const fSpend = flagged.reduce((a, p) => a + p.w.q.fob * p.ev.volume, 0);
+  const gapUsd = P.reduce((a, p) => a + p.gapUsd, 0);
+  const fGap = flagged.reduce((a, p) => a + p.gapUsd, 0);
+  return {P, spend, flagged, fSpend, gapUsd, share:fSpend / spend * 100, avgGap:fSpend ? fGap / fSpend * 100 : 0};
+}
+function renderValue(){
+  const T = portfolioTotals();
+  if (!state.val) state.val = {spend:100, share:Math.round(T.share), gap:Math.round(T.avgGap * 2) / 2, capture:30};
+  const v = state.val;
+  const savings = v.spend * 1e6 * v.share / 100 * v.gap / 100 * v.capture / 100;
+  const done = Object.values(state.runs).filter(r => r.status === 'done');
+  const lastDur = done.length ? Math.max(1, Math.round(done.at(-1).dur)) : null;
+  const sl = (id, label, min, max, step, val, fmt, sub) => `
+    <div class="ctl"><div class="top"><label for="val-${id}">${label}</label><b class="num">${fmt(val)}</b></div>
+    <input type="range" id="val-${id}" min="${min}" max="${max}" step="${step}" value="${val}" data-action="val" data-k="${id}"><span class="sub">${sub}</span></div>`;
+  return `
+  <section class="screen">
+    <div class="shead">
+      <div>
+        <div class="eyebrow">Step 6 of 6 · Value and next step</div>
+        <h1>What this could be worth, and how we prove it</h1>
+        <p class="lead">Today's demo ran on sample data. A short pilot on one Carhartt product category would replace every sample number with real ones and measure the savings.</p>
+      </div>
+      <button class="btn" data-action="go" data-screen="portfolio">Back to the start</button>
+    </div>
+
+    <div class="kpis" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <div class="kpi"><span class="k">Checked overnight</span><span class="v num">120</span><span class="d">quotes across 40 styles</span></div>
+      <div class="kpi hl"><span class="k">Gap found (sample data)</span><span class="v num">${moneyK(T.gapUsd)}</span><span class="d">${(T.gapUsd / T.spend * 100).toFixed(1)}% of ${moneyK(T.spend)} FOB spend</span></div>
+      <div class="kpi"><span class="k">One sourcing decision</span><span class="v num">${lastDur ? lastDur + ' sec' : '~15 sec'}</span><span class="d">from question to a reasoned answer</span></div>
+      <div class="kpi"><span class="k">Every step on record</span><span class="v num">${state.audit.length}</span><span class="d">audit log entries in this session</span></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><h2>Savings estimate</h2><span class="tag sample">Illustrative</span></div>
+        <div class="controls">
+          ${sl('spend', 'Annual FOB spend in scope', 20, 500, 10, v.spend, x => '$' + x + 'M', 'Example value: enter Carhartt’s own figure')}
+          ${sl('share', 'Share of spend priced above should-cost', 5, 80, 1, v.share, x => x + '%', `Sample data today: ${T.share.toFixed(0)}%`)}
+          ${sl('gap', 'Average gap on that spend', 1, 20, 0.5, v.gap, x => x + '%', `Sample data today: ${T.avgGap.toFixed(1)}%`)}
+          ${sl('capture', 'Share of the gap won back in negotiation', 10, 80, 5, v.capture, x => x + '%', 'Assumption to test in the pilot')}
+        </div>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line);display:grid;gap:4px">
+          <span class="muted small">Estimated annual savings</span>
+          <span class="num" style="font-size:40px;font-weight:800;line-height:1.1;color:var(--red)">${moneyK(savings)}</span>
+          <span class="small muted">= spend × share above should-cost × average gap × share won back</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Proposed pilot</h2><span class="muted small">Jan – May 2027</span></div>
+        <div style="display:grid;gap:14px">
+          <div><h3 style="margin-bottom:6px">Scope</h3>
+            <div class="small" style="display:grid;gap:4px">
+              <div class="flag info">One product category, 3–5 buyers, real negotiations</div>
+              <div class="flag info">The five agents on Carhartt data, plus supplier scorecard and CAPA tracking</div>
+              <div class="flag info">Read-only links to SAP and Centric PLM; runs alongside RELEX</div>
+            </div></div>
+          <div><h3 style="margin-bottom:6px">Data we would need (under NDA)</h3>
+            <div class="small" style="display:grid;gap:4px">
+              <div class="flag info">Costing sheets and the style / color / FOB master</div>
+              <div class="flag info">BOM export from PLM for the chosen styles</div>
+              <div class="flag info">Quotes, final negotiated FOB, on-time and AQL history</div>
+            </div></div>
+          <div><h3 style="margin-bottom:6px">What we would measure</h3>
+            <div class="small" style="display:grid;gap:4px">
+              <div class="flag info">Dollar gap found and dollars won back in real negotiations</div>
+              <div class="flag info">Should-cost accuracy against negotiated FOB</div>
+              <div class="flag info">Time to prepare a sourcing decision, before and after</div>
+            </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Next steps</h2><button class="btn" data-action="copy-summary">Copy summary</button></div>
+      <div class="grid3">
+        <div class="quote"><b>1 · Agree the pilot scope</b><span class="small muted">Pick the product category and the buyers who will use it.</span></div>
+        <div class="quote"><b>2 · Sign the NDA and name data owners</b><span class="small muted">So the data can be shared safely in January.</span></div>
+        <div class="quote"><b>3 · Book the pilot kickoff</b><span class="small muted">Start in January, with results ready by the end of May 2027.</span></div>
+      </div>
+    </div>
+    <div class="foot-note">Demo figures are sample data. The savings estimate is illustrative and depends on the inputs above.</div>
+  </section>`;
+}
+function summaryText(){
+  const T = portfolioTotals(), v = state.val || {spend:100, share:Math.round(T.share), gap:r1(T.avgGap), capture:30};
+  const savings = v.spend * 1e6 * v.share / 100 * v.gap / 100 * v.capture / 100;
+  return ['Sourcing Decision Desk: POC summary (sample data)',
+    `- 120 quotes across 40 styles checked overnight; gap found ${moneyK(T.gapUsd)} (${(T.gapUsd / T.spend * 100).toFixed(1)}% of FOB spend)`,
+    '- Five agents answer a sourcing question in seconds: should-cost, landed cost and risk, supplier record, negotiation brief',
+    '- The buyer approves every decision; every step is logged',
+    `- Illustrative savings: ${moneyK(savings)} a year on $${v.spend}M spend (${v.share}% above should-cost, ${v.gap}% average gap, ${v.capture}% won back)`,
+    'Next steps: agree pilot scope, sign NDA and name data owners, kick off in January 2027'].join('\n');
+}
+
+function renderDrawer(){
+  const root = document.getElementById('overlay-root');
+  if (!state.drawer){ root.innerHTML = ''; return; }
+  let title = '', body = '';
+  if (state.drawer === 'audit'){
+    title = 'Audit log';
+    body = state.audit.length ? `<div class="log">${state.audit.map(e => `<div class="log-row"><span class="tm">${e.tm}</span><span class="who ${e.user ? 'user' : ''}">${esc(e.who)}</span><span><b>${esc(e.action)}</b><br><span class="muted">${esc(e.detail)}</span></span></div>`).join('')}</div>`
+      : '<p class="muted">No actions yet. Ask the agents on the decision desk to start the log.</p>';
+    body = `<div style="display:flex;gap:10px"><button class="btn" data-action="export-audit" ${state.audit.length ? '' : 'disabled'}>Export CSV</button></div>` + body;
+  } else {
+    title = 'Cost model and assumptions';
+    body = `
+      <p style="margin:0">Every number comes from these formulas. The language model explains and writes, but never calculates.</p>
+      <div class="formula">Labor = SMV × labor rate ÷ line efficiency<br>Should-cost FOB = (fabric yd × price × (1 + waste) + trims + labor × (1 + overhead)) × (1 + margin)<br>Landed cost = quote FOB × (1 + duty) + freight<br>Overall score = landed-cost score × cost weight + supplier score × (1 − cost weight)</div>
+      <h3>Country inputs (illustrative examples)</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Country</th><th class="r">Labor $/min</th><th>Trade agreement</th><th class="r">Extra tariff</th><th class="r">Freight base</th></tr></thead><tbody>
+        ${Object.values(COUNTRIES).map(c => `<tr><td>${c.name}</td><td class="r num">${money(c.labor, 3)} ${TAG.sample}</td><td>${c.fta || 'None'} ${TAG.public}</td><td class="r num">${c.fta ? '–' : c.extra + ' pts'}</td><td class="r num">${money(c.freight)}</td></tr>`).join('')}
+      </tbody></table></div>
+      <h3>Category inputs</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Category</th><th>HTS</th><th class="r">Base duty</th><th class="r">Freight weight</th><th class="r">Waste</th></tr></thead><tbody>
+        ${Object.values(CATEGORIES).map(c => `<tr><td>${c.name}</td><td>${c.hts}</td><td class="r num">${c.duty}%</td><td class="r num">×${c.weight}</td><td class="r num">${c.waste}%</td></tr>`).join('')}
+      </tbody></table></div>
+      <h3>Suppliers (sample data)</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Supplier</th><th class="r">On time</th><th class="r">AQL</th><th class="r">CAPA</th><th class="r">Lead</th><th class="r">Efficiency</th><th class="r">Capacity</th></tr></thead><tbody>
+        ${Object.values(SUPPLIERS).map(s => `<tr><td>${supName(s.id)}</td><td class="r num">${s.otd}%</td><td class="r num">${s.aql}%</td><td class="r num">${s.capa}</td><td class="r num">${s.lead} d</td><td class="r num">${Math.round(s.eff * 100)}%</td><td class="r num">${fmtInt(s.capacity)}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div style="display:grid;gap:6px" class="small">
+        <div>${TAG.public} real public information: US tariff codes (HTS) and trade agreements.</div>
+        <div>${TAG.sample} created for this proof of concept. No real supplier names or Carhartt data are used.</div>
+        <div>${TAG.calc} calculated by the cost engine.</div>
+      </div>`;
+  }
+  root.innerHTML = `<div class="overlay" data-action="close-drawer"><aside class="drawer" role="dialog" aria-label="${title}">
+    <div class="dh"><h2>${title}</h2><button class="btn ghost" data-action="close-drawer" aria-label="Close">Close</button></div>
+    <div class="db">${body}</div></aside></div>`;
+}
+
+/* =====================================================================
+   RENDER + EVENTS
+   ===================================================================== */
+function render(){
+  const main = document.getElementById('main');
+  const keep = main.scrollTop;
+  const map = {portfolio:renderPortfolio, desk:renderDesk, run:renderRun, reco:renderReco, whatif:renderWhatIf, value:renderValue};
+  main.innerHTML = map[state.screen]();
+  main.classList.toggle('hide-tech', !state.tech);
+  main.scrollTop = keep;
+  renderRail();
+}
+function go(screen){
+  const main = document.getElementById('main');
+  state.screen = screen;
+  render();
+  main.scrollTop = 0;
+}
+function rerunPortfolio(){
+  state.portfolioRun = {status:'running', progress:0};
+  log('Foreman', 'Portfolio check started', '40 styles, 120 quotes');
+  render();
+  const iv = setInterval(() => {
+    state.portfolioRun.progress += 2;
+    if (state.portfolioRun.progress >= 40){
+      clearInterval(iv);
+      state.portfolioRun = {status:'done', progress:40};
+      log('Foreman', 'Portfolio check complete', '40 styles checked against should-cost and landed cost');
+    }
+    if (state.screen === 'portfolio') render();
+  }, 110);
+}
+function applyPreset(p){
+  const st = styleById(state.styleId);
+  const sc = BASE_SC();
+  const label = {vn0:'Extra tariff on Vietnam removed', vn40:'Extra tariff on Asia doubles', fta:'Fabric fails origin rules', vol:'Volume doubles', cotton:'Cotton price +15%'}[p];
+  if (p === 'vn0') sc.extra.VN = 0;
+  if (p === 'vn40'){ sc.extra.VN = 40; sc.extra.BD = 20; }
+  if (p === 'fta') sc.ftaOk = false;
+  if (p === 'vol') sc.volume = st.volume * 2;
+  if (p === 'cotton') sc.fabricPct = 15;
+  state.sc = sc;
+  const ev = evaluate(st, sc, state.weights);
+  log('Buyer', 'What-if: ' + label, `${st.name}: recommendation ${supShort(ev.winner.sid)}${ev.split ? ' + ' + supShort(ev.split.second.sid) : ''}`, true);
+  render();
+}
+function decide(type){
+  const st = styleById(state.styleId);
+  const ev = evaluate(st, BASE_SC(), state.weights);
+  const br = brief(ev);
+  let text = '';
+  if (type === 'approve') text = `${supName(ev.winner.sid)} at target ${money(br.target)}, walk-away ${money(br.walk)}`;
+  if (type === 'change'){ const sid = document.getElementById('change-to').value; text = `Buyer chose ${supName(sid)} instead of Supplier ${ev.winner.sid}`; }
+  if (type === 'reject'){
+    const reason = document.getElementById('reject-reason').value.trim();
+    if (!reason){ toast('Add a reason before rejecting'); document.getElementById('reject-reason').focus(); return; }
+    text = `Reason: ${reason}`;
+  }
+  state.decisions[st.id] = {type, text, tm:clockStr().slice(0, 5)};
+  log('Buyer', type === 'approve' ? 'Approved recommendation' : type === 'change' ? 'Changed supplier' : 'Rejected recommendation', `${st.name}: ${text}`, true);
+  render();
+}
+function briefText(){
+  const st = styleById(state.styleId);
+  const ev = evaluate(st, BASE_SC(), state.weights);
+  const br = brief(ev);
+  return [`Negotiation brief: ${st.name} (${st.code})`, `Supplier: ${supName(ev.winner.sid)} · quote ${money(ev.winner.q.fob)} · should-cost ${money(ev.winner.sh.fob)}`,
+    `Target ${money(br.target)} · walk-away ${money(br.walk)} · saving at target ${moneyK(br.saving)}`, ...br.points.map((p, i) => `${i + 1}. ${p}`), br.pushback, '(Sample data, Sourcing Decision Desk POC)'].join('\n');
+}
+function copyText(text, msg = 'Copied'){
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast(msg); } catch (e) { toast('Copy failed: select the text by hand'); } ta.remove(); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast(msg), fallback); else fallback();
+}
+function answerGo(to){
+  const main = document.getElementById('main');
+  if (to === 'whatif'){ state.screen = 'whatif'; applyPreset('vn0'); main.scrollTop = 0; return; }
+  if (to === 'brief'){ go('reco'); const b = document.getElementById('brief-card'); if (b) b.scrollIntoView({block:'start'}); return; }
+  go(to);
+}
+function exportAudit(){
+  const rows = [['time','who','action','detail'], ...[...state.audit].reverse().map(e => [e.tm, e.who, e.action, e.detail])];
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'sourcing-decision-desk-audit-log.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+  if (el.tagName === 'INPUT' || el.tagName === 'SELECT') return;
+  if (a === 'close-drawer' && e.target !== el && el.classList.contains('overlay')) return;
+  switch (a){
+    case 'go': go(el.dataset.screen); break;
+    case 'go-desk': state.styleId = el.dataset.style; go('desk'); break;
+    case 'start-run': startRun(); break;
+    case 'skip-run': { const run = state.runs[state.styleId]; if (run) run.skip = true; toast('Speeding up the run'); break; }
+    case 'rerun-portfolio': rerunPortfolio(); break;
+    case 'filter-cat': state.filters.cat = el.dataset.cat; render(); break;
+    case 'sort': { const k = el.dataset.key; state.sort = {key:k, dir:state.sort.key === k ? -state.sort.dir : -1}; render(); break; }
+    case 'breakdown': state.breakdownSid = el.dataset.sid; render(); break;
+    case 'reset-weights': state.weights = DEFAULT_W(); log('Buyer', 'Reset ranking weights', 'Cost 60%, supplier record 40%', true); render(); break;
+    case 'pick-q': state.qid = el.dataset.q; render(); break;
+    case 'answer-go': answerGo(el.dataset.to); break;
+    case 'toggle-tech': state.tech = !state.tech; el.querySelector('b').textContent = state.tech ? 'On' : 'Off'; render(); break;
+    case 'copy-summary': copyText(summaryText(), 'Summary copied'); log('Buyer', 'Copied POC summary', 'Value and next step', true); break;
+    case 'copy-brief': copyText(briefText(), 'Brief copied'); log('Buyer', 'Copied negotiation brief', styleById(state.styleId).name, true); break;
+    case 'decide': decide(el.dataset.type); break;
+    case 'undo-decision': delete state.decisions[state.styleId]; log('Buyer', 'Undid decision', styleById(state.styleId).name, true); render(); break;
+    case 'preset': applyPreset(el.dataset.p); break;
+    case 'reset-sc': state.sc = BASE_SC(); log('Buyer', 'What-if reset', 'Back to today', true); render(); break;
+    case 'open-audit': state.drawer = 'audit'; renderDrawer(); break;
+    case 'open-model': state.drawer = 'model'; renderDrawer(); break;
+    case 'close-drawer': state.drawer = null; renderDrawer(); break;
+    case 'export-audit': exportAudit(); break;
+    case 'reset': location.reload(); break;
+  }
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  const a = el.dataset.action;
+  if (a === 'weight'){
+    state.weights[el.dataset.k] = Number(el.value);
+    render();
+    const again = document.getElementById(el.id); if (again) again.focus();
+  }
+  if (a === 'val'){
+    state.val[el.dataset.k] = Number(el.value);
+    render();
+    const again = document.getElementById(el.id); if (again) again.focus();
+  }
+  if (a === 'sc'){
+    const k = el.dataset.k, v = Number(el.value);
+    if (k === 'vn') state.sc.extra.VN = v;
+    if (k === 'bd') state.sc.extra.BD = v;
+    if (k === 'labor') state.sc.laborPct = v;
+    if (k === 'fabric') state.sc.fabricPct = v;
+    if (k === 'volume') state.sc.volume = v === styleById(state.styleId).volume ? null : v;
+    if (k === 'fta') state.sc.ftaOk = el.checked;
+    render();
+    const again = document.getElementById(el.id); if (again) again.focus();
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.action === 'select-style'){ state.styleId = el.value; state.breakdownSid = null; render(); }
+  if (el.dataset.action === 'only-gaps'){ state.filters.onlyGaps = el.checked; render(); }
+  if (el.dataset.action === 'weight') log('Buyer', 'Changed ranking weights', `Cost ${state.weights.cost}% · on time ${state.weights.otd} · AQL ${state.weights.aql} · CAPA ${state.weights.capa} · lead ${state.weights.lead}`, true);
+  if (el.dataset.action === 'sc' && el.dataset.k !== 'fta'){
+    const st = styleById(state.styleId); const ev = evaluate(st, state.sc, state.weights);
+    log('Buyer', 'What-if adjusted', `${el.labels?.[0]?.textContent || el.id}: ${el.value} → ${supShort(ev.winner.sid)}`, true);
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.drawer){ state.drawer = null; renderDrawer(); } });
+
+render();
+</script>
+</body>
+</html>
