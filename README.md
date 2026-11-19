@@ -27,3 +27,13 @@ The app is one static file (`index.html`) with no backend, database or API keys.
 1. Create an S3 bucket and upload `index.html`.
 2. Create a CloudFront distribution with the bucket as its origin (Origin Access Control) and set the default root object to `index.html`.
 3. Share the CloudFront link.
+
+## Password protection on Vercel
+
+`middleware.js` puts a password screen in front of every page when the site runs on Vercel. It works on the free plan and needs no build settings.
+
+1. In Vercel, open the project, then **Settings → Environment Variables**.
+2. Add `SITE_PASSWORD` with the password you want, for the Production (and Preview) environments.
+3. Redeploy. Visitors see the sign-in screen and stay signed in for 7 days. Visit `/logout` to sign out.
+
+Changing `SITE_PASSWORD` and redeploying signs everyone out. If the variable is missing, the site shows a "not set up" message instead of the demo. Opening `index.html` from disk skips the password.
